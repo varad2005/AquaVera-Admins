@@ -9,6 +9,7 @@ import { useRequests, useLogs } from "@/hooks/use-mock-api";
 import { format } from "date-fns";
 import { Link } from "wouter";
 import { StatusBadge } from "@/components/ui-custom/status-badge";
+import { WaterRequest, Log } from "@/data/mock-data";
 
 const trendData = [
   { name: 'Mon', requests: 120 },
@@ -47,7 +48,7 @@ export default function Dashboard() {
         />
         <StatCard 
           title="Pending Approvals" 
-          value={requests?.filter(r => r.status === 'Pending').length || 0} 
+          value={requests?.filter((r: WaterRequest) => r.status === 'Pending').length || 0} 
           trend={{ value: '3%', isPositive: false }}
           icon={FileWarning} 
         />
@@ -59,7 +60,7 @@ export default function Dashboard() {
         />
         <StatCard 
           title="Flagged Anomalies" 
-          value={requests?.filter(r => r.status === 'Flagged').length || 0} 
+          value={requests?.filter((r: WaterRequest) => r.status === 'Flagged').length || 0} 
           trend={{ value: '2', isPositive: false }}
           icon={CheckCircle2} 
           className="border-amber-200 bg-amber-50/30"
@@ -120,7 +121,7 @@ export default function Dashboard() {
               <div className="p-8 text-center text-muted-foreground text-sm">Loading requests...</div>
             ) : (
               <ul className="divide-y divide-border">
-                {requests?.slice(0, 5).map(req => (
+                {requests?.slice(0, 5).map((req: WaterRequest) => (
                   <li key={req.id} className="p-4 hover:bg-muted/30 transition-colors flex justify-between items-center">
                     <div>
                       <p className="text-sm font-medium text-foreground">{req.id} - {req.farmerName}</p>
@@ -146,7 +147,7 @@ export default function Dashboard() {
               <div className="p-8 text-center text-muted-foreground text-sm">Loading logs...</div>
             ) : (
               <ul className="divide-y divide-border">
-                {logs?.slice(0, 5).map(log => (
+                {logs?.slice(0, 5).map((log: Log) => (
                   <li key={log.id} className="p-4 hover:bg-muted/30 transition-colors">
                     <p className="text-sm text-foreground">{log.action}</p>
                     <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">

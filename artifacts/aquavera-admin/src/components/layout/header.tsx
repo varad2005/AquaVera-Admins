@@ -1,8 +1,12 @@
 import { Bell, Search, User } from "lucide-react";
 import { useRole } from "@/context/role-context";
+import { useState } from "react";
+import { useLocation } from "wouter";
 
 export function Header() {
   const { role } = useRole();
+  const [, setLocation] = useLocation();
+  const [search, setSearch] = useState("");
 
   return (
     <header className="h-16 bg-card border-b border-border flex items-center justify-between px-8 sticky top-0 z-10">
@@ -12,6 +16,13 @@ export function Header() {
           <input 
             type="text" 
             placeholder="Search Request ID, Farmer Name, or Land ID..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && search) {
+                setLocation(`/requests?q=${encodeURIComponent(search)}`);
+              }
+            }}
             className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           />
         </div>

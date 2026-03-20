@@ -26,8 +26,12 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-screen fixed left-0 top-0 overflow-y-auto border-r border-sidebar-border z-20">
       <div className="p-6 flex items-center gap-3 border-b border-sidebar-border/50">
-        <div className="bg-primary p-2 rounded-md">
-          <Droplets className="w-6 h-6 text-primary-foreground" />
+        <div className="bg-white/10 p-1.5 rounded-md overflow-hidden">
+          <img 
+            src="/logo.png" 
+            alt="AquaVera Logo" 
+            className="w-10 h-10 object-contain"
+          />
         </div>
         <div>
           <h1 className="font-bold text-xl tracking-tight leading-none text-white">AquaVera</h1>
@@ -65,7 +69,10 @@ export function Sidebar() {
       </div>
 
       <div className="mt-auto p-4 border-t border-sidebar-border/50">
-        <button className="flex items-center gap-3 px-3 py-2.5 w-full text-left rounded-md text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-border/50 hover:text-white transition-colors">
+        <button 
+          onClick={() => window.location.assign('/')}
+          className="flex items-center gap-3 px-3 py-2.5 w-full text-left rounded-md text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-border/50 hover:text-white transition-colors"
+        >
           <LogOut className="w-4 h-4" />
           Secure Logout
         </button>

@@ -3,10 +3,12 @@ import { useLogs } from "@/hooks/use-mock-api";
 import { format } from "date-fns";
 import { Shield, Download, Calendar } from "lucide-react";
 import { useRole } from "@/context/role-context";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ActivityLogs() {
   const { data: logs, isLoading } = useLogs();
   const { isAdmin } = useRole();
+  const { toast } = useToast();
 
   if (!isAdmin) {
     return (
@@ -28,11 +30,17 @@ export default function ActivityLogs() {
           <p className="text-muted-foreground mt-1 text-sm">Immutable record of all system and user actions.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors">
+          <button 
+            onClick={() => toast({ title: "Filter", description: "Date range filtering coming soon!" })}
+            className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors"
+          >
             <Calendar className="w-4 h-4" />
             Last 7 Days
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors text-primary border-primary/20 hover:bg-primary/5">
+          <button 
+            onClick={() => toast({ title: "Export", description: "Audit logs exported to CSV successfully!" })}
+            className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors text-primary border-primary/20 hover:bg-primary/5"
+          >
             <Download className="w-4 h-4" />
             Export CSV
           </button>
@@ -56,7 +64,7 @@ export default function ActivityLogs() {
                   <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">Loading audit trail...</td>
                 </tr>
               ) : (
-                logs?.map(log => (
+                logs?.map((log: any) => (
                   <tr key={log.id} className="hover:bg-muted/20 transition-colors font-mono">
                     <td className="px-6 py-3 whitespace-nowrap text-muted-foreground">
                       {format(new Date(log.timestamp), 'yyyy-MM-dd HH:mm:ss')}

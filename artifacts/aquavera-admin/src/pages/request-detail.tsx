@@ -4,7 +4,7 @@ import { useRequest, useUpdateRequestStatus } from "@/hooks/use-mock-api";
 import { StatusBadge } from "@/components/ui-custom/status-badge";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
-import { ArrowLeft, MapPin, Image as ImageIcon, CheckCircle, XCircle, AlertTriangle, UserCheck, ShieldAlert, Cpu } from "lucide-react";
+import { ArrowLeft, MapPin, Image as ImageIcon, CheckCircle, XCircle, AlertTriangle, UserCheck, ShieldAlert, Cpu, Droplets } from "lucide-react";
 import { useState } from "react";
 
 export default function RequestDetail() {

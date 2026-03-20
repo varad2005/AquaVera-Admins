@@ -2,18 +2,44 @@ import { useState } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { StatusBadge } from "@/components/ui-custom/status-badge";
 import { useRequests } from "@/hooks/use-mock-api";
+import { WaterRequest } from "@/data/mock-data";
 import { format } from "date-fns";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Search, Filter, SlidersHorizontal, ArrowUpRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function WaterRequests() {
   const { data: requests, isLoading } = useRequests();
-  const [filterStatus, setFilterStatus] = useState<string>("All");
+  const { toast } = useToast();
+  const [location] = useLocation();
+  const queryParams = new URLSearchParams(location.split('?')[1] || "");
+  const initialSearch = queryParams.get('q') || "";
 
-  const filteredRequests = requests?.filter(req => {
+  const [filterStatus, setFilterStatus] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const filteredRequests = requests?.filter((req: WaterRequest) => {
     if (filterStatus !== "All" && req.status !== filterStatus) return false;
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        req.id.toLowerCase().includes(query) ||
+        req.farmerName.toLowerCase().includes(query) ||
+        req.village.toLowerCase().includes(query) ||
+        req.district.toLowerCase().includes(query) ||
+        req.cropType.toLowerCase().includes(query)
+      );
+    }
     return true;
   });
+
+  const totalPages = Math.ceil((filteredRequests?.length || 0) / itemsPerPage);
+  const paginatedRequests = filteredRequests?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <AppLayout>
@@ -29,10 +55,18 @@ export default function WaterRequests() {
             <input 
               type="text" 
               placeholder="Search ID, Farmer..." 
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
               className="pl-9 pr-4 py-2 w-64 bg-card border border-border rounded-md text-sm focus:outline-none focus:border-primary"
             />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors">
+          <button 
+            onClick={() => toast({ title: "Filters", description: "Advanced filtering modal coming soon!" })}
+            className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors"
+          >
             <Filter className="w-4 h-4" />
             Filters
           </button>
@@ -44,7 +78,10 @@ export default function WaterRequests() {
           {['All', 'Pending', 'Flagged', 'Approved', 'Rejected'].map(status => (
             <button
               key={status}
-              onClick={() => setFilterStatus(status)}
+              onClick={() => {
+                setFilterStatus(status);
+                setCurrentPage(1);
+              }}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
                 filterStatus === status 
                   ? 'bg-primary text-primary-foreground shadow-sm' 
@@ -74,12 +111,12 @@ export default function WaterRequests() {
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">Loading requests data...</td>
                 </tr>
-              ) : filteredRequests?.length === 0 ? (
+              ) : paginatedRequests?.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">No requests found matching criteria.</td>
                 </tr>
               ) : (
-                filteredRequests?.map(req => (
+                paginatedRequests?.map((req: WaterRequest) => (
                   <tr key={req.id} className="hover:bg-muted/20 transition-colors group">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="font-semibold text-foreground">{req.id}</span>
@@ -118,10 +155,25 @@ export default function WaterRequests() {
         </div>
         
         <div className="border-t border-border p-4 flex items-center justify-between bg-card">
-          <p className="text-sm text-muted-foreground">Showing <span className="font-medium text-foreground">{filteredRequests?.length || 0}</span> results</p>
+          <p className="text-sm text-muted-foreground">
+            Showing <span className="font-medium text-foreground">{paginatedRequests?.length || 0}</span> of <span className="font-medium text-foreground">{filteredRequests?.length || 0}</span> results
+          </p>
           <div className="flex items-center gap-2">
-            <button className="px-3 py-1.5 border border-border rounded-md text-sm font-medium disabled:opacity-50" disabled>Previous</button>
-            <button className="px-3 py-1.5 border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors">Next</button>
+            <button 
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 border border-border rounded-md text-sm font-medium disabled:opacity-50 hover:bg-muted transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-muted-foreground px-2">Page {currentPage} of {totalPages || 1}</span>
+            <button 
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="px-3 py-1.5 border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>

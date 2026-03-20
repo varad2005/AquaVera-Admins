@@ -1,3 +1,9 @@
+import path from "path";
+import dotenv from "dotenv";
+
+// Load .env from workspace root BEFORE any other imports
+dotenv.config({ path: path.resolve(import.meta.dirname, "../../../.env") });
+
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "./schema";
