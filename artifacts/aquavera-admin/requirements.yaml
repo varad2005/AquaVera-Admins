@@ -1,0 +1,17 @@
+packages:
+  "recharts": "Required for dashboard data visualization charts (Line, Bar)"
+  "date-fns": "For elegant and consistent date formatting across the admin panel"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility to efficiently merge Tailwind CSS classes"
+
+images:
+  - path: "artifacts/aquavera-admin/public/images/satellite-placeholder.png"
+    description: "High altitude realistic satellite imagery of geometric agricultural farmlands in India, showing varied crop patches in greens and browns, top-down view, crisp, professional"
+    aspect_ratio: "16:9"
+  - path: "artifacts/aquavera-admin/public/images/crop-wheat.png"
+    description: "Close up top-down view of healthy green wheat crops in a field, realistic lighting, highly detailed agricultural photography"
+    aspect_ratio: "4:3"
+
+notes:
+  - Application relies entirely on mock data via TanStack Query simulating network requests
+  - RBAC is implemented client-side via React Context for demonstration purposes
