@@ -18,27 +18,37 @@ interface RoleContextType {
   user: UserProfile;
 }
 
-const DEFAULT_USER: UserProfile = {
+const ADMIN_PROFILE: UserProfile = {
   id: "AV-ADM-001",
   name: "Varad Deshmukh",
-  email: "varad@aquavera.gov.in",
+  email: "admin@aquavera.gov.in",
   phone: "+91 88888 77777",
   role: "Admin",
   department: "Water Allocation Board"
+};
+
+const SUB_ADMIN_PROFILE: UserProfile = {
+  id: "AV-SUB-042",
+  name: "Rajesh Soni",
+  email: "subadmin@aquavera.gov.in",
+  phone: "+91 99999 66666",
+  role: "Sub-Admin",
+  department: "Regional Irrigation Office"
 };
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role>('Admin');
-  const [user] = useState<UserProfile>(DEFAULT_USER);
+  
+  const user = role === 'Admin' ? ADMIN_PROFILE : SUB_ADMIN_PROFILE;
 
   return (
     <RoleContext.Provider value={{ 
       role, 
       setRole, 
       isAdmin: role === 'Admin',
-      user: { ...user, role } // Sync user role with context role state
+      user: user
     }}>
       {children}
     </RoleContext.Provider>
