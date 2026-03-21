@@ -21,7 +21,6 @@ export function Sidebar() {
     { href: "/farmers", label: "Registered Farmers", icon: Users, visible: true },
     { href: "/users", label: "User Management", icon: ShieldCheck, visible: isAdmin },
     { href: "/logs", label: "Activity Logs", icon: FileText, visible: isAdmin },
-    { href: "/settings", label: "Settings", icon: Settings, visible: true },
   ];
 
   return (
