@@ -6,7 +6,12 @@ import {
   FileText, 
   Settings,
   LogOut,
-  ShieldCheck
+  ShieldCheck,
+  PlusCircle,
+  Landmark,
+  CreditCard,
+  UserCircle,
+  Activity,
 } from "lucide-react";
 import { useRole } from "@/context/role-context";
 import { useLanguage } from "@/context/language-context";
@@ -18,9 +23,20 @@ export function Sidebar() {
 
   const { t } = useLanguage();
   const navItems = [
-    { href: "/dashboard", label: t("sidebar.dashboard"), icon: LayoutDashboard, visible: true },
-    { href: "/requests", label: t("sidebar.requests"), icon: Droplets, visible: true },
-    { href: "/farmers", label: t("sidebar.farmers"), icon: Users, visible: true },
+    { 
+      href: role === 'Farmer' ? "/dashboard/farmer" : "/dashboard", 
+      label: t("sidebar.dashboard"), 
+      icon: LayoutDashboard, 
+      visible: true 
+    },
+    { href: "/requests", label: t("sidebar.requests"), icon: Droplets, visible: role !== 'Farmer' },
+    { href: "/farmers", label: t("sidebar.farmers"), icon: Users, visible: role !== 'Farmer' },
+    
+    // Farmer-only items (Shifted from Quick Access)
+    { href: "/land-summary", label: "Land summary", icon: Landmark, visible: role === 'Farmer' },
+    { href: "/bills", label: "Bill summary", icon: CreditCard, visible: role === 'Farmer' },
+    { href: "/request-activity", label: "Request activity", icon: Activity, visible: role === 'Farmer' },
+
     { href: "/users", label: t("sidebar.users"), icon: ShieldCheck, visible: isAdmin },
     { href: "/logs", label: t("sidebar.logs"), icon: FileText, visible: isAdmin },
   ];

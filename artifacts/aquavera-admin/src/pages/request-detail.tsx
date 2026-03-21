@@ -44,7 +44,7 @@ export default function RequestDetail() {
   const handleAction = (status: 'Approved' | 'Rejected' | 'Flagged') => {
     updateStatus({ id: request.id, status }, {
       onSuccess: () => {
-        // Optionally navigate back or stay to view status
+        setLocation("/requests");
       }
     });
   };
@@ -201,11 +201,24 @@ export default function RequestDetail() {
                   </div>
                 </>
               ) : (
-                <div className="h-full flex items-center justify-center bg-slate-800 relative">
-                   <img src={`${import.meta.env.BASE_URL}images/crop-wheat.png`} alt="Crop view" className="w-full h-full object-cover opacity-90" />
-                   <div className="absolute top-4 right-4 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur border border-white/20">
-                     {t("detail.ai_prediction")}: {request.confidenceScore < 70 ? 'Unknown' : t(`crop.${request.cropType.toLowerCase()}`)}
-                   </div>
+                <div className="h-full flex items-center justify-center bg-slate-800 relative min-h-[400px]">
+                   {request.evidenceImage ? (
+                     <img 
+                       src={request.evidenceImage} 
+                       alt="Field Evidence" 
+                       className="w-full h-full object-contain" 
+                     />
+                   ) : (
+                     <div className="flex flex-col items-center gap-3 text-slate-500">
+                       <ImageIcon className="w-12 h-12 opacity-20" />
+                       <p className="text-xs font-medium italic opacity-50">No evidence photo available</p>
+                     </div>
+                   )}
+                   {request.deviceInfo && (
+                     <div className="absolute bottom-4 left-4 bg-black/60 text-white text-[10px] px-2 py-1 rounded backdrop-blur border border-white/20 font-mono opacity-80 max-w-[80%] truncate">
+                       Device: {request.deviceInfo}
+                     </div>
+                   )}
                 </div>
               )}
             </div>

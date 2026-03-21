@@ -45,6 +45,25 @@ export function useUpdateRequestStatus() {
   });
 }
 
+export function useAddRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (request: any) => {
+      const res = await fetch('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request),
+      });
+      if (!res.ok) throw new Error('Failed to create request');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['requests'] });
+      queryClient.invalidateQueries({ queryKey: ['logs'] });
+    },
+  });
+}
+
 // --- Users ---
 export function useUsers() {
   return useQuery({

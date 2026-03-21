@@ -1,4 +1,4 @@
-import { Bell, Search, User, FileText, CheckCircle2, AlertTriangle, Clock, Settings, LogOut, Mail, Phone, Building2, Globe } from "lucide-react";
+import { Bell, Search, User, FileText, CheckCircle2, AlertTriangle, Clock, Settings, LogOut, Mail, Phone, Building2, Globe, UserCircle } from "lucide-react";
 import { useRole } from "@/context/role-context";
 import { useLanguage } from "@/context/language-context";
 import { useState } from "react";
@@ -208,9 +208,9 @@ export function Header() {
 
               <DropdownMenuSeparator className="mx-2 my-2 opacity-50" />
               
-              <DropdownMenuItem onClick={() => setLocation('/settings')} className="mx-2 p-3 rounded-xl focus:bg-slate-50 cursor-pointer flex gap-3 group">
-                <Settings className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />
-                <span className="text-xs font-bold text-slate-600 group-hover:text-slate-900 transition-colors">{t("header.platform_settings")}</span>
+              <DropdownMenuItem onClick={() => setLocation('/profile')} className="mx-2 p-3 rounded-xl focus:bg-slate-50 cursor-pointer flex gap-3 group">
+                <UserCircle className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" />
+                <span className="text-xs font-bold text-slate-600 group-hover:text-slate-900 transition-colors">{t("header.profile_summary")}</span>
               </DropdownMenuItem>
               
               <DropdownMenuItem onClick={() => window.location.assign('/')} className="mx-2 p-3 rounded-xl focus:bg-destructive/5 cursor-pointer flex gap-3 group">

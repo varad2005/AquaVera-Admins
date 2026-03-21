@@ -19,7 +19,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setRole } = useRole();
+  const { setRole, setUser } = useRole();
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -37,15 +37,29 @@ export default function Login() {
       if (response.ok) {
         const user = await response.json();
         setRole(user.role);
-        
+        setUser(user);
+        localStorage.setItem("user", JSON.stringify(user));
+
         // Show success toast with user's name
-        const welcomeMsg = user.role === "Admin" ? t("login.welcome_admin") : t("login.welcome_subadmin");
+        let welcomeMsg = "";
+        if (user.role === "Admin") welcomeMsg = t("login.welcome_admin");
+        else if (user.role === "Sub-Admin") welcomeMsg = t("login.welcome_subadmin");
+        else welcomeMsg = t("login.welcome_farmer");
+
         toast({ 
           title: t("login.success_title"), 
           description: `${welcomeMsg} (${user.name})` 
         });
         
-        setLocation("/dashboard");
+        if (user.role === "Farmer") {
+          if (user.isProfileComplete === 0) {
+            setLocation("/auth/complete-profile");
+          } else {
+            setLocation("/dashboard/farmer");
+          }
+        } else {
+          setLocation("/dashboard");
+        }
       } else {
         const errorData = await response.json();
         toast({ 

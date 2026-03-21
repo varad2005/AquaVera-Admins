@@ -15,6 +15,17 @@ export const users = pgTable("users", {
   role: text("role").notNull(),
   status: userStatusEnum("status").notNull().default("Active"),
   lastLogin: timestamp("last_login").notNull().defaultNow(),
+  
+  // Farmer specific fields (optional until profile completion)
+  aadhaar: text("aadhaar"),
+  landRecordId: text("land_record_id"), // 7/12 number
+  plotNumber: text("plot_number"),
+  state: text("state"),
+  city: text("city"),
+  taluka: text("taluka"),
+  pinCode: text("pin_code"),
+  surveyNumber: text("survey_number"),
+  isProfileComplete: integer("is_profile_complete").notNull().default(0), // 0 for false, 1 for true
 });
 
 export const waterRequests = pgTable("water_requests", {
@@ -33,19 +44,12 @@ export const waterRequests = pgTable("water_requests", {
   confidenceScore: integer("confidence_score").notNull(),
   ndviIndex: real("ndvi_index").notNull(),
   assignedTo: text("assigned_to"),
+  evidenceImage: text("evidence_image"), // Base64 or URL
+  latitude: real("latitude"),
+  longitude: real("longitude"),
+  deviceInfo: text("device_info"),
+  paymentStatus: text("payment_status").notNull().default("Unpaid"),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
-});
-
-export const farmers = pgTable("farmers", {
-  id: text("id").primaryKey(), // Using text IDs like FRM-1001
-  name: text("name").notNull(),
-  aadhaar: text("aadhaar").notNull(),
-  landId: text("land_id").notNull(),
-  village: text("village").notNull(),
-  district: text("district").notNull(),
-  totalRequests: integer("total_requests").notNull().default(0),
-  activeConnections: integer("active_connections").notNull().default(0),
-  lastConnection: timestamp("last_connection").notNull().defaultNow(),
 });
 
 export const auditLogs = pgTable("audit_logs", {
@@ -64,8 +68,6 @@ export const insertRequestSchema = createInsertSchema(waterRequests);
 export const selectRequestSchema = createSelectSchema(waterRequests);
 export const insertLogSchema = createInsertSchema(auditLogs);
 export const selectLogSchema = createSelectSchema(auditLogs);
-export const insertFarmerSchema = createInsertSchema(farmers);
-export const selectFarmerSchema = createSelectSchema(farmers);
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;

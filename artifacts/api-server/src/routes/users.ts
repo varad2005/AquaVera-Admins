@@ -13,27 +13,82 @@ router.post("/login", async (req, res) => {
       .where(and(eq(users.email, email), eq(users.password, password)));
 
     if (!user) {
-      res.status(401).json({ error: "Invalid email or password" });
-      return;
+      return res.status(401).json({ error: "Invalid email or password" });
     }
 
     if (user.status === "Inactive") {
-      res.status(401).json({ error: "Account is inactive" });
-      return;
+      return res.status(401).json({ error: "Account is inactive" });
     }
 
     const { password: _, ...userWithoutPassword } = user;
-    res.json(userWithoutPassword);
+    return res.json(userWithoutPassword);
   } catch (error) {
-    res.status(500).json({ error: "Login failed" });
+    return res.status(500).json({ error: "Login failed" });
+  }
+});
+
+// POST signup
+router.post("/signup", async (req, res) => {
+  try {
+    const { fullName, email, phone, password } = req.body;
+    
+    // Check if user already exists
+    const [existing] = await db.select().from(users).where(eq(users.email, email));
+    if (existing) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
+
+    const id = `USR-${Math.floor(Math.random() * 90000) + 10000}`;
+    const [newUser] = await db.insert(users).values({
+      id,
+      name: fullName,
+      email,
+      phone,
+      password,
+      role: "Farmer",
+      status: "Active",
+      isProfileComplete: 0
+    }).returning();
+
+    const { password: _, ...userWithoutPassword } = newUser;
+    return res.status(201).json(userWithoutPassword);
+  } catch (error) {
+    console.error("Signup error:", error);
+    return res.status(500).json({ error: "Signup failed" });
+  }
+});
+
+// PATCH user profile (farmers)
+router.patch("/users/profile/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = { 
+      ...req.body, 
+      isProfileComplete: 1 
+    };
+    
+    const updated = await db.update(users)
+      .set(updateData)
+      .where(eq(users.id, id))
+      .returning();
+
+    if (!updated.length) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    const { password: _, ...user } = updated[0];
+    return res.json(user);
+  } catch (error) {
+    console.error("Profile update error:", error);
+    return res.status(500).json({ error: "Failed to update profile" });
   }
 });
 router.get("/users", async (req, res) => {
   try {
     const allUsers = await db.select().from(users);
-    res.json(allUsers);
+    return res.json(allUsers);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch users" });
+    return res.status(500).json({ error: "Failed to fetch users" });
   }
 });
 
@@ -46,10 +101,10 @@ router.post("/users", async (req, res) => {
       data.id = `USR-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
     }
     const newUser = await db.insert(users).values(data).returning();
-    res.status(201).json(newUser[0]);
+    return res.status(201).json(newUser[0]);
   } catch (error) {
     console.error("Error creating user:", error);
-    res.status(500).json({ error: "Failed to create user" });
+    return res.status(500).json({ error: "Failed to create user" });
   }
 });
 
@@ -62,12 +117,11 @@ router.patch("/users/:id", async (req, res) => {
       .returning();
     
     if (!updated.length) {
-      res.status(404).json({ error: "User not found" });
-      return;
+      return res.status(404).json({ error: "User not found" });
     }
-    res.json(updated[0]);
+    return res.json(updated[0]);
   } catch (error) {
-    res.status(500).json({ error: "Failed to update user" });
+    return res.status(500).json({ error: "Failed to update user" });
   }
 });
 
@@ -79,12 +133,11 @@ router.delete("/users/:id", async (req, res) => {
       .returning();
     
     if (!deleted.length) {
-      res.status(404).json({ error: "User not found" });
-      return;
+      return res.status(404).json({ error: "User not found" });
     }
-    res.json({ message: "User deleted successfully" });
+    return res.json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Failed to delete user" });
+    return res.status(500).json({ error: "Failed to delete user" });
   }
 });
 

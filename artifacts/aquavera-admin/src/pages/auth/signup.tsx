@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
 import { AuthLayout } from "@/components/layout/auth-layout";
 import { Button } from "@/components/ui/button";
+import { useRole } from "@/context/role-context";
+import { useToast } from "@/hooks/use-toast";
 import { 
   InputGroup, 
   InputGroupAddon, 
@@ -14,7 +16,11 @@ import { useLanguage } from "@/context/language-context";
 
 export default function SignUp() {
   const { t } = useLanguage();
+  const { setRole, setUser } = useRole();
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -33,6 +39,42 @@ export default function SignUp() {
     formData.phone.length > 0 && 
     formData.password.length > 0 && 
     formData.password === formData.confirmPassword;
+
+  const handleSignUp = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const user = await response.json();
+        setRole(user.role);
+        setUser(user);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        toast({ 
+          title: "Account Created!", 
+          description: `Welcome ${user.name}! Let's complete your profile.` 
+        });
+        
+        setLocation("/auth/complete-profile");
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Signup failed");
+      }
+    } catch (error: any) {
+      toast({ 
+        title: "Registration Failed", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AuthLayout subtitle={t("auth.farmer_registration")}>
@@ -119,10 +161,12 @@ export default function SignUp() {
         <div className="pt-2">
           <Button 
             className={`w-full h-14 text-xl font-semibold rounded-2xl transition-all duration-300 ${
-              isFormValid ? "bg-primary hover:bg-primary/90 text-white" : "bg-primary text-white"
+              isFormValid ? "bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20" : "bg-slate-200 text-slate-400"
             }`}
+            disabled={!isFormValid || loading}
+            onClick={handleSignUp}
           >
-            {t("signup.button")}
+            {loading ? "Creating Account..." : t("signup.button")}
           </Button>
         </div>
 

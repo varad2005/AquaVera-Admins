@@ -1,54 +1,74 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-export type Role = 'Admin' | 'Sub-Admin';
+export type Role = 'Admin' | 'Sub-Admin' | 'Farmer';
 
 export interface UserProfile {
   name: string;
   email: string;
   phone: string;
   role: Role;
-  department: string;
+  department?: string;
   id: string;
+  isProfileComplete?: number;
+  aadhaar?: string;
+  landRecordId?: string;
+  plotNumber?: string;
+  state?: string;
+  city?: string;
+  taluka?: string;
+  pinCode?: string;
+  surveyNumber?: string;
 }
 
 interface RoleContextType {
-  role: Role;
+  role: Role | null;
   setRole: (role: Role) => void;
   isAdmin: boolean;
-  user: UserProfile;
+  isFarmer: boolean;
+  isSubAdmin: boolean;
+  user: UserProfile | null;
+  setUser: (user: UserProfile | null) => void;
 }
-
-const ADMIN_PROFILE: UserProfile = {
-  id: "AV-ADM-001",
-  name: "Varad Deshmukh",
-  email: "admin@aquavera.gov.in",
-  phone: "+91 88888 77777",
-  role: "Admin",
-  department: "Water Allocation Board"
-};
-
-const SUB_ADMIN_PROFILE: UserProfile = {
-  id: "AV-SUB-042",
-  name: "Rajesh Soni",
-  email: "subadmin@aquavera.gov.in",
-  phone: "+91 99999 66666",
-  role: "Sub-Admin",
-  department: "Regional Irrigation Office"
-};
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<Role>('Admin');
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    const saved = localStorage.getItem("user");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const [role, setRole] = useState<Role | null>(user?.role || null);
   
-  const user = role === 'Admin' ? ADMIN_PROFILE : SUB_ADMIN_PROFILE;
+  const handleSetRole = (newRole: Role) => {
+    setRole(newRole);
+  };
+
+  // Keep role in sync with user.role
+  React.useEffect(() => {
+    if (user) {
+      setRole(user.role);
+    } else {
+      setRole(null);
+    }
+  }, [user]);
 
   return (
     <RoleContext.Provider value={{ 
       role, 
-      setRole, 
+      setRole: handleSetRole, 
       isAdmin: role === 'Admin',
-      user: user
+      isFarmer: role === 'Farmer',
+      isSubAdmin: role === 'Sub-Admin',
+      user,
+      setUser
     }}>
       {children}
     </RoleContext.Provider>

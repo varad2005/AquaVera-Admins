@@ -1,4 +1,5 @@
 import { AppLayout } from "@/components/layout/app-layout";
+import { useMemo } from "react";
 import { StatCard } from "@/components/ui-custom/stat-card";
 import { Droplets, FileWarning, CheckCircle2, FileText, ArrowRight } from "lucide-react";
 import { 
@@ -6,48 +7,61 @@ import {
   BarChart, Bar
 } from "recharts";
 import { useRequests, useLogs } from "@/hooks/use-mock-api";
+import { useRole } from "@/context/role-context";
 import { format } from "date-fns";
 import { Link } from "wouter";
 import { StatusBadge } from "@/components/ui-custom/status-badge";
 import { WaterRequest, Log } from "@/data/mock-data";
 import { useLanguage } from "@/context/language-context";
 
-const trendData = [
-  { name: 'Mon', requests: 120 },
-  { name: 'Tue', requests: 150 },
-  { name: 'Wed', requests: 180 },
-  { name: 'Thu', requests: 140 },
-  { name: 'Fri', requests: 210 },
-  { name: 'Sat', requests: 190 },
-  { name: 'Sun', requests: 240 },
-];
-
-const cropData = [
-  { name: 'Wheat', value: 450 },
-  { name: 'Sugarcane', value: 380 },
-  { name: 'Rice', value: 290 },
-  { name: 'Cotton', value: 210 },
-];
 
 export default function Dashboard() {
+  const { user } = useRole();
+  if (!user) return null;
   const { t } = useLanguage();
   const { data: requests, isLoading: isLoadingReqs } = useRequests();
   const { data: logs, isLoading: isLoadingLogs } = useLogs();
 
+  // Dynamic Trend Data Calculation (Last 7 Days)
+  const trendData = useMemo(() => {
+    if (!requests) return [];
+    
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const counts: Record<string, number> = {};
+    days.forEach(d => counts[d] = 0);
+
+    requests.forEach((r: WaterRequest) => {
+      const date = new Date(r.timestamp);
+      const dayName = days[date.getDay()];
+      counts[dayName]++;
+    });
+
+    return days.map(day => ({
+      name: t(`day.${day.toLowerCase()}`),
+      requests: counts[day]
+    }));
+  }, [requests, t]);
+
+  // Dynamic Crop Data Calculation
+  const cropData = useMemo(() => {
+    if (!requests) return [];
+    
+    const counts: Record<string, number> = {};
+    requests.forEach((r: WaterRequest) => {
+      const crop = r.cropType.split(' ')[0]; // Handle "Wheat (Food Grains)"
+      counts[crop] = (counts[crop] || 0) + 1;
+    });
+
+    return Object.entries(counts).map(([name, value]) => ({
+      name: t(`crop.${name.toLowerCase()}`),
+      value
+    })).sort((a, b) => b.value - a.value);
+  }, [requests, t]);
+
   const totalRequests = requests?.length || 0;
   const pendingRequests = requests?.filter((r: WaterRequest) => r.status === 'Pending').length || 0;
   const flaggedRequests = requests?.filter((r: WaterRequest) => r.status === 'Flagged').length || 0;
-  const totalVolume = requests?.reduce((acc: number, r: WaterRequest) => acc + (r.durationHours * 10), 0) || 0; // Mock calculation: 10m3 per hour
-
-  const translatedTrendData = trendData.map(d => ({
-    ...d,
-    name: t(`day.${d.name.toLowerCase()}`)
-  }));
-
-  const translatedCropData = cropData.map(d => ({
-    ...d,
-    name: t(`crop.${d.name.toLowerCase()}`)
-  }));
+  const totalVolume = requests?.reduce((acc: number, r: WaterRequest) => acc + (r.durationHours * 10), 0) || 0; // 10m3 per hour
 
   return (
     <AppLayout>
@@ -96,7 +110,7 @@ export default function Dashboard() {
           </div>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={translatedTrendData}>
+              <LineChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
@@ -114,7 +128,7 @@ export default function Dashboard() {
           <h3 className="text-base font-semibold text-foreground mb-6">{t("chart.crop_distribution")}</h3>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={translatedCropData} layout="vertical" margin={{top: 0, right: 0, left: 0, bottom: 0}}>
+              <BarChart data={cropData} layout="vertical" margin={{top: 0, right: 0, left: 0, bottom: 0}}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#1e293b', fontWeight: 500}} width={80} />
