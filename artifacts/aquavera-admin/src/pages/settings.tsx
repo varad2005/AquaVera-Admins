@@ -3,7 +3,7 @@ import { useRole } from "@/context/role-context";
 import { User, Shield, BellRing, Database } from "lucide-react";
 
 export default function Settings() {
-  const { role } = useRole();
+  const { role, user } = useRole();
 
   return (
     <AppLayout>
@@ -23,19 +23,37 @@ export default function Settings() {
                 <h2 className="font-semibold text-foreground">Personal Profile</h2>
               </div>
               <div className="p-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">Full Name</label>
-                    <input type="text" disabled value="Current Officer" className="w-full px-3 py-2 bg-muted/50 border border-border rounded-md text-sm text-muted-foreground cursor-not-allowed" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Full Name</label>
+                    <div className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 select-none">
+                      {user.name}
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">Department</label>
-                    <input type="text" disabled value="Water Allocation Board" className="w-full px-3 py-2 bg-muted/50 border border-border rounded-md text-sm text-muted-foreground cursor-not-allowed" />
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Department</label>
+                    <div className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 select-none">
+                      {user.department}
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Official Email</label>
-                  <input type="email" disabled value="officer@aquavera.gov.in" className="w-full px-3 py-2 bg-muted/50 border border-border rounded-md text-sm text-muted-foreground cursor-not-allowed" />
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Official Email</label>
+                    <div className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 select-none">
+                      {user.email}
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Phone Number</label>
+                    <div className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 select-none">
+                      {user.phone}
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Officer ID</label>
+                    <div className="px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm font-black text-primary/60 bg-primary/5 select-all">
+                      {user.id}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
