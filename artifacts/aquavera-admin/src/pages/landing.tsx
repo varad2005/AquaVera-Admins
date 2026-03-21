@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "wouter";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/language-context";
 import { LandingLayout } from "@/components/layout/landing-layout";
 import { Button } from "@/components/ui/button";
@@ -12,8 +13,13 @@ import {
   Mail, 
   Phone,
   ArrowRight,
-  MessageSquare,
-  HelpCircle
+  Wind,
+  Sun,
+  Activity,
+  ChevronRight,
+  Database,
+  ShieldCheck,
+  TrendingUp
 } from "lucide-react";
 import {
   Accordion,
@@ -21,6 +27,36 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  Cell
+} from 'recharts';
+
+const yieldData = [
+  { name: 'Rice', value: 420, color: '#22c55e' },
+  { name: 'Corn', value: 300, color: '#4ade80' },
+  { name: 'Soybean', value: 180, color: '#86efac' },
+];
+
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6 }
+};
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+};
 
 export default function LandingPage() {
   const { t } = useLanguage();
@@ -28,216 +64,366 @@ export default function LandingPage() {
   return (
     <LandingLayout>
       {/* Hero Section */}
-      <section id="home" className="relative py-24 lg:py-40 overflow-hidden bg-white border-b border-slate-100">
-        <div className="container mx-auto relative z-10 grid gap-16 lg:grid-cols-2 lg:items-center">
-          <div className="space-y-8 animate-in slide-in-from-left duration-700 max-w-[640px] mx-auto lg:mx-0 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mx-auto lg:mx-0">
-              <Droplets className="w-3.5 h-3.5" />
-              <span>Official Digital Initiative</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.1]">
-              {t("hero.title")}
-            </h1>
-            <p className="text-lg md:text-xl text-slate-500 font-medium leading-relaxed">
-              {t("hero.subtitle")}
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center lg:justify-start pt-4">
+      <section id="home" className="relative min-h-[90vh] flex items-center overflow-hidden bg-slate-950">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/images/hero-smart-farm.png" 
+            alt="Smart Farm" 
+            className="w-full h-full object-cover opacity-60"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/40 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-950 to-transparent" />
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10 grid lg:grid-cols-12 gap-12 py-20">
+          <div className="lg:col-span-7 space-y-8">
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-emerald-400 text-xs font-bold uppercase tracking-widest"
+            >
+              <Activity className="w-3.5 h-3.5" />
+              <span>Smart Farming Solutions for Data-Driven Growth</span>
+            </motion.div>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[0.95]"
+            >
+              Intelligence insights <br />
+              <span className="text-emerald-400 italic">tailored for farmers.</span>
+            </motion.h1>
+
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl md:text-2xl text-slate-300 font-medium leading-relaxed max-w-[600px]"
+            >
+              Automate, monitor, and analyze your farmland through AI-powered sensors and satellite insights — accessible anytime, anywhere.
+            </motion.p>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="flex flex-wrap gap-4 pt-4"
+            >
               <Link href="/auth/signup">
-                <Button size="lg" className="h-14 px-10 text-lg font-bold rounded-xl bg-primary text-white shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all border-none">
-                  {t("hero.cta")} <ArrowRight className="ml-2 w-5 h-5" />
+                <Button size="lg" className="h-16 px-10 text-lg font-bold rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-2xl shadow-emerald-500/20 transition-all border-none">
+                  Start Free Trial <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="h-14 px-10 text-lg font-bold rounded-xl border-slate-200 text-slate-700 bg-white hover:bg-slate-50">
-                Explore Portal
-              </Button>
-            </div>
+            </motion.div>
           </div>
-          <div className="relative animate-in slide-in-from-right duration-700 max-w-[500px] lg:max-w-none mx-auto w-full">
-            <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border-[12px] border-white ring-1 ring-slate-200">
-              <img 
-                src="https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&q=80&w=1000" 
-                alt="Modern Farming" 
-                className="w-full h-auto"
-              />
-            </div>
-            <div className="absolute -top-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-teal-500/20 rounded-full blur-3xl" />
+
+          <div className="lg:col-span-5 relative">
+            {/* Status Overlays */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+              className="absolute -top-10 -left-10 z-20 p-6 rounded-[2.5rem] bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl min-w-[240px]"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-bold text-white/60 uppercase tracking-widest">Crop Health</span>
+                <TrendingUp className="w-4 h-4 text-emerald-400" />
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-xl bg-emerald-500/20">
+                      <Droplets className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <span className="text-sm font-bold text-white">Humidity</span>
+                  </div>
+                  <span className="text-sm font-black text-white">74%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-xl bg-blue-500/20">
+                      <Wind className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <span className="text-sm font-bold text-white">Wind Speed</span>
+                  </div>
+                  <span className="text-sm font-black text-white">12 km/h</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-xl bg-amber-500/20">
+                      <Sun className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <span className="text-sm font-bold text-white">UV Index</span>
+                  </div>
+                  <span className="text-sm font-black text-white">06</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Chart Overlay */}
+            <motion.div 
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1 }}
+              className="mt-40 p-10 rounded-[2.5rem] bg-white backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight">Smart Yield Insights</h3>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Per Crop Analysis</p>
+                </div>
+                <div className="text-right">
+                <span className="text-sm font-black text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full">+12.5%</span>
+                </div>
+              </div>
+              
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={yieldData}>
+                    <Tooltip 
+                      cursor={{fill: 'transparent'}}
+                      contentStyle={{borderRadius: '1rem', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', fontWeight: 'bold'}}
+                    />
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                      {yieldData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#64748b'}} dy={10} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 mt-8 border-t pt-8 border-slate-50">
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Yield</p>
+                  <p className="text-xl font-black text-slate-900">12,600 Kg</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Efficiency</p>
+                  <p className="text-xl font-black text-slate-900">92%</p>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-24 bg-white">
-        <div className="container mx-auto">
+      {/* Features Grid */}
+      <section id="about" className="py-32 bg-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full opacity-5 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full fill-emerald-500">
+            <path d="M0,0 L100,0 L100,100 L0,100 Z" fill="url(#grid)" />
+            <defs>
+              <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+              </pattern>
+            </defs>
+          </svg>
+        </div>
+
+        <div className="container mx-auto px-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col md:flex-row justify-between items-end gap-12 mb-20"
+          >
+            <div className="max-w-[700px] space-y-6 text-center md:text-left mx-auto md:mx-0">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Modern Agriculture Eco-system</span>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight">
+                Powerful Features to <br />
+                <span className="text-emerald-500">Transform the Way You Farm</span>
+              </h2>
+            </div>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.95 }}
+               whileInView={{ opacity: 1, scale: 1 }}
+               viewport={{ once: true }}
+               className="relative rounded-[3rem] overflow-hidden shadow-2xl"
+             >
+               <img src="/images/soil-analysis.png" alt="Soil Analysis" className="w-full h-auto" />
+               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent flex items-end p-12">
+                 <div className="space-y-4">
+                   <div className="flex gap-4">
+                     <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20">
+                       <p className="text-[10px] font-bold text-white/60 tracking-widest mb-1 uppercase">Soil Moisture</p>
+                       <p className="text-xl font-black text-white tracking-tight">77%</p>
+                     </div>
+                     <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20">
+                       <p className="text-[10px] font-bold text-white/60 tracking-widest mb-1 uppercase">Nitrogen</p>
+                       <p className="text-xl font-black text-white tracking-tight">65%</p>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </motion.div>
+
+             <div className="grid gap-10">
+               {[
+                 { 
+                   title: "Resource Optimization", 
+                   desc: "Strategic water allocation driven by satellite imagery and local sensor data.",
+                   icon: Droplets,
+                   color: "bg-emerald-500"
+                 },
+                 { 
+                   title: "Real-time Sync", 
+                   desc: "All-data automatically syncs directly ensuring every farm update is accessible anytime.",
+                   icon: Database,
+                   color: "bg-blue-500"
+                 },
+                 { 
+                   title: "AI Analysis", 
+                   desc: "Our AI analyzes historical trends, predicts growth patterns and recommends efficient watering.",
+                   icon: CheckCircle,
+                   color: "bg-amber-500"
+                 }
+               ].map((feature, i) => (
+                 <motion.div 
+                   key={i}
+                   initial={{ opacity: 0, x: 20 }}
+                   whileInView={{ opacity: 1, x: 0 }}
+                   viewport={{ once: true }}
+                   transition={{ delay: i * 0.1 }}
+                   className="flex gap-8 group"
+                 >
+                   <div className={`w-16 h-16 rounded-3xl ${feature.color} flex items-center justify-center text-white shrink-0 shadow-lg group-hover:scale-110 transition-transform`}>
+                     <feature.icon className="w-8 h-8" />
+                   </div>
+                   <div className="space-y-2">
+                     <h3 className="text-xl font-black text-slate-900 tracking-tight">{feature.title}</h3>
+                     <p className="text-slate-500 font-medium leading-relaxed max-w-[400px]">{feature.desc}</p>
+                   </div>
+                 </motion.div>
+               ))}
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof */}
+      <section id="feedback" className="py-32 bg-slate-50 relative overflow-hidden">
+        <div className="container mx-auto px-6">
           <div className="text-center max-w-[800px] mx-auto mb-20 space-y-4">
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">{t("about.title")}</h2>
-            <div className="w-20 h-1.5 bg-primary mx-auto rounded-full mb-6" />
-            <p className="text-lg text-slate-500 font-medium leading-relaxed">
-              {t("about.desc")}
-            </p>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Trusted by Leading Farmers</h2>
+            <p className="text-lg text-slate-500 font-medium">Validating our impact through direct feedback from our community.</p>
           </div>
-          
-          <div className="grid md:grid-cols-3 gap-10">
-            {[
-              { 
-                title: "Resource Optimization", 
-                desc: "Strategic water allocation driven by satellite imagery and local sensor data.",
-                icon: Droplets 
-              },
-              { 
-                title: "Stakeholder Portal", 
-                desc: "A unified platform for farmers, administrators, and field officers.",
-                icon: CheckCircle 
-              },
-              { 
-                title: "National Coverage", 
-                desc: "Scaling across districts to ensure equitable water distribution for all.",
-                icon: MapPin 
-              }
-            ].map((feature, i) => (
-              <div key={i} className="p-10 rounded-2xl bg-white border border-slate-100 hover:border-primary/20 hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 group">
-                <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mb-8 border border-slate-100 group-hover:bg-primary/5 transition-colors">
-                  <feature.icon className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-black mb-4 text-slate-900 tracking-tight">{feature.title}</h3>
-                <p className="text-slate-500 text-sm font-bold leading-relaxed">{feature.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Feedback Section */}
-      <section id="feedback" className="py-24 bg-slate-50 border-y border-slate-100">
-        <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 text-center md:text-left">
-            <div className="space-y-4 max-w-[640px] mx-auto md:mx-0">
-              <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">{t("feedback.title")}</h2>
-              <p className="text-lg text-slate-500 font-medium">Validating our impact through direct feedback from farmers.</p>
-            </div>
-            <Button variant="outline" className="rounded-xl border-slate-200 font-bold text-xs uppercase tracking-widest px-6 h-12 bg-white w-full md:w-auto">Public Testimonials</Button>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="p-10 rounded-2xl bg-white border border-slate-200 shadow-sm relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-primary/20 group-hover:bg-primary transition-colors" />
-                <div className="flex gap-1 mb-6">
-                  {[1, 2, 3, 4, 5].map(s => <span key={s} className="text-amber-500 text-lg">★</span>)}
-                </div>
-                <p className="text-slate-700 font-medium italic mb-8 leading-relaxed">"{t("feedback.1.text")}"</p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center font-black text-primary">
-                     {t("feedback.1.author")[0]}
-                  </div>
-                  <div>
-                    <p className="font-black text-slate-900 tracking-tight">{t("feedback.1.author")}</p>
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{i === 1 ? "Wheat Farmer, Pune" : i === 2 ? "Rice Cultivator, Vidarbha" : "Horticulturist, Nashik"}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="grid md:grid-cols-3 gap-8">
+             {[1, 2, 3].map((i) => (
+               <motion.div 
+                 key={i}
+                 initial={{ opacity: 0, y: 20 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ delay: i * 0.1 }}
+                 className="p-10 rounded-[2.5rem] bg-white border border-slate-200 shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 group"
+               >
+                 <div className="flex gap-1 mb-8 text-emerald-500">
+                   {[1, 2, 3, 4, 5].map(s => <Sun key={s} className="w-4 h-4 fill-current" />)}
+                 </div>
+                 <p className="text-slate-700 font-medium text-lg leading-relaxed mb-10 italic">"The real-time insights have completely changed how we manage our irrigation schedules. Yields are up by 15% this season."</p>
+                 <div className="flex items-center gap-4 pt-8 border-t border-slate-50">
+                   <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center font-black text-emerald-500">
+                     {i === 1 ? "W" : i === 2 ? "R" : "H"}
+                   </div>
+                   <div>
+                     <p className="font-black text-slate-900 leading-none mb-1">Rajesh Kumar</p>
+                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{i === 1 ? "Wheat Farmer, Pune" : i === 2 ? "Rice Cultivator, Vidarbha" : "Horticulturist, Nashik"}</p>
+                   </div>
+                 </div>
+               </motion.div>
+             ))}
           </div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-24 bg-white">
-        <div className="container grid lg:grid-cols-2 gap-20 items-center">
-          <div className="space-y-10">
-            <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">{t("contact.title")}</h2>
-              <div className="w-16 h-1 bg-primary rounded-full mb-6" />
-              <p className="text-lg text-slate-500 font-medium">For official inquiries, policy clarifications, or technical support, please contact our specialized desks.</p>
+      <section id="contact" className="py-32 bg-white">
+        <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-24 items-center">
+          <div className="space-y-12">
+            <div className="space-y-6">
+              <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-[0.95]">Ready to start your <br /> <span className="text-emerald-500">smart farming journey?</span></h2>
+              <p className="text-xl text-slate-500 font-medium max-w-[500px]">Get in touch with our experts for or technical support and policy clarifications.</p>
             </div>
             
             <div className="space-y-8">
               {[
                 { icon: Mail, label: "Digital Support", value: "helpdesk-av@nic.in" },
-                { icon: Phone, label: "Toll-Free Helpline", value: "1800-445-6677" },
-                { icon: MapPin, label: "Headquarters", value: "Krishi Bhawan, Dr. Rajendra Prasad Rd, New Delhi" }
+                { icon: Phone, label: "Helpline", value: "1800-445-6677" }
               ].map((item, i) => (
-                <div key={i} className="flex items-start gap-5">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-primary shrink-0 hover:bg-primary/5 transition-colors">
+                <div key={i} className="flex items-center gap-6 group">
+                  <div className="w-16 h-16 rounded-[2rem] bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-500 group-hover:text-white transition-all">
                     <item.icon className="w-6 h-6" />
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{item.label}</p>
-                    <p className="font-black text-slate-800 tracking-tight">{item.value}</p>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.label}</p>
+                    <p className="text-2xl font-black text-slate-900 tracking-tight">{item.value}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
           
-          <div className="bg-white p-6 md:p-12 rounded-3xl border border-slate-200 shadow-2xl relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16" />
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="p-12 rounded-[3.5rem] bg-slate-50 border border-slate-200 shadow-sm relative overflow-hidden"
+          >
             <form className="space-y-6 relative z-10" onSubmit={(e) => e.preventDefault()}>
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">{t("contact.name")}</label>
-                <Input placeholder="Enter your full name" className="h-12 rounded-xl border-slate-200 font-bold text-sm bg-slate-50/50" />
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Your Name</label>
+                  <Input placeholder="Rajesh Kumar" className="h-16 rounded-2xl border-none shadow-sm bg-white font-bold" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Email Address</label>
+                  <Input type="email" placeholder="rajesh@example.com" className="h-16 rounded-2xl border-none shadow-sm bg-white font-bold" />
+                </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">{t("contact.email")}</label>
-                <Input type="email" placeholder="official@example.gov.in" className="h-12 rounded-xl border-slate-200 font-bold text-sm bg-slate-50/50" />
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">Your Inquiry</label>
+                <Textarea placeholder="How can we help you today?" className="min-h-[160px] rounded-2xl border-none shadow-sm bg-white font-bold py-4" />
               </div>
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">{t("contact.message")}</label>
-                <Textarea placeholder="Describe your inquiry in detail..." className="min-h-[140px] rounded-xl border-slate-200 font-bold text-sm bg-slate-50/50" />
-              </div>
-              <Button className="w-full h-14 text-sm font-black uppercase tracking-[0.2em] rounded-xl mt-4 bg-slate-900 text-white hover:bg-slate-800 shadow-xl shadow-slate-200">
-                {t("contact.send")}
+              <Button className="w-full h-20 text-lg font-black uppercase tracking-widest rounded-[2rem] mt-4 bg-emerald-500 text-white hover:bg-emerald-600 shadow-2xl shadow-emerald-500/20">
+                Send Message
               </Button>
             </form>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* FAQs Section */}
-      <section id="faqs" className="py-24 bg-slate-50 border-t border-slate-100">
-        <div className="container max-w-[800px]">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{t("faqs.title")}</h2>
-            <p className="text-lg text-slate-500 font-medium italic">Standard Operating Procedures & Common Clarifications.</p>
-          </div>
-          
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            {[1, 2, 3, 4].map((i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="bg-white px-8 py-2 rounded-2xl border border-slate-200 shadow-sm hover:border-primary/30 transition-all">
-                <AccordionTrigger className="text-left font-black text-slate-800 hover:text-primary transition-colors hover:no-underline py-4 text-base tracking-tight">
-                  {i === 1 ? t("faqs.1.q") : i === 2 ? t("faqs.2.q") : i === 3 ? "How do I update my registered mobile number?" : "Is there a portal mobile application?"}
-                </AccordionTrigger>
-                <AccordionContent className="text-slate-500 leading-relaxed font-bold text-sm pb-6">
-                  {i === 1 ? t("faqs.1.a") : i === 2 ? t("faqs.2.a") : i === 3 ? "Registered mobile numbers can be updated via the 'Profile Settings' after secure OTP validation of the existing number." : "Yes, the official mobile application follows the same security protocols and is available on major app stores."}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="bg-slate-900 rounded-[2.5rem] p-12 md:p-24 text-center text-white relative overflow-hidden shadow-2xl border-4 border-primary/20">
-            <div className="relative z-10 space-y-10 max-w-[800px] mx-auto">
-              <h2 className="text-3xl md:text-5xl font-black leading-[1.15] tracking-tight">Modernize your agricultural operations today</h2>
-              <p className="text-xl text-slate-400 font-bold max-w-[600px] mx-auto leading-relaxed">Secure your resource distribution and join a nationwide network of smart farmers.</p>
-              <div className="flex flex-wrap gap-6 justify-center">
-                <Link href="/auth/signup">
-                  <Button size="lg" className="h-16 px-12 text-sm font-black uppercase tracking-[0.2em] rounded-xl bg-white text-slate-900 hover:bg-slate-100 transition-all border-none shadow-xl">
-                    Register Now
-                  </Button>
-                </Link>
-                <Button size="lg" variant="outline" className="h-16 px-12 text-sm font-black uppercase tracking-[0.2em] rounded-xl border-2 border-white/20 text-white bg-transparent hover:bg-white/10">
-                  Contact Nodal Office
-                </Button>
-              </div>
-            </div>
-            <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-[100px] -mr-40 -mt-40" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-slate-800/50 rounded-full blur-[100px] -ml-40 -mb-40" />
+      {/* Footer Branding */}
+      <section className="py-20 bg-slate-950 text-white relative overflow-hidden">
+        <div className="container mx-auto px-6 text-center space-y-12 relative z-10">
+          <motion.h2 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="text-5xl md:text-8xl font-black tracking-tighter"
+          >
+            AQUAVERA — 2026
+          </motion.h2>
+          <div className="flex justify-center gap-12">
+            <Link href="/auth/signup">
+              <Button variant="link" className="text-white font-bold hover:text-emerald-400 p-0 h-auto uppercase tracking-widest text-xs">Join Network</Button>
+            </Link>
+            <Button variant="link" className="text-white font-bold hover:text-emerald-400 p-0 h-auto uppercase tracking-widest text-xs">System Status</Button>
+            <Button variant="link" className="text-white font-bold hover:text-emerald-400 p-0 h-auto uppercase tracking-widest text-xs">Privacy Policy</Button>
           </div>
         </div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
       </section>
     </LandingLayout>
   );
