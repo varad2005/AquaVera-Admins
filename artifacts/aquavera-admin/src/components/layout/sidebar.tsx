@@ -9,18 +9,20 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { useRole } from "@/context/role-context";
+import { useLanguage } from "@/context/language-context";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
   const [location] = useLocation();
   const { isAdmin, role } = useRole();
 
+  const { t } = useLanguage();
   const navItems = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, visible: true },
-    { href: "/requests", label: "Water Requests", icon: Droplets, visible: true },
-    { href: "/farmers", label: "Registered Farmers", icon: Users, visible: true },
-    { href: "/users", label: "User Management", icon: ShieldCheck, visible: isAdmin },
-    { href: "/logs", label: "Activity Logs", icon: FileText, visible: isAdmin },
+    { href: "/dashboard", label: t("sidebar.dashboard"), icon: LayoutDashboard, visible: true },
+    { href: "/requests", label: t("sidebar.requests"), icon: Droplets, visible: true },
+    { href: "/farmers", label: t("sidebar.farmers"), icon: Users, visible: true },
+    { href: "/users", label: t("sidebar.users"), icon: ShieldCheck, visible: isAdmin },
+    { href: "/logs", label: t("sidebar.logs"), icon: FileText, visible: isAdmin },
   ];
 
   return (
@@ -35,7 +37,7 @@ export function Sidebar() {
         </div>
         <div>
           <h1 className="font-bold text-xl tracking-tight leading-none text-white">AquaVera</h1>
-          <p className="text-[10px] text-sidebar-foreground/60 uppercase tracking-wider mt-1 font-semibold">Government Portal</p>
+          <p className="text-[10px] text-sidebar-foreground/60 uppercase tracking-wider mt-1 font-semibold">{t("sidebar.gov_portal")}</p>
         </div>
       </div>
 
@@ -45,7 +47,7 @@ export function Sidebar() {
             <ShieldCheck className="w-4 h-4 text-slate-300" />
           </div>
           <div>
-            <p className="text-xs text-sidebar-foreground/60 font-medium">Logged in as</p>
+            <p className="text-xs text-sidebar-foreground/60 font-medium">{t("sidebar.logged_in_as")}</p>
             <p className="text-sm font-semibold text-white">{role}</p>
           </div>
         </div>
@@ -74,7 +76,7 @@ export function Sidebar() {
           className="flex items-center gap-3 px-3 py-2.5 w-full text-left rounded-md text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-border/50 hover:text-white transition-colors"
         >
           <LogOut className="w-4 h-4" />
-          Secure Logout
+          {t("sidebar.secure_logout")}
         </button>
       </div>
     </aside>

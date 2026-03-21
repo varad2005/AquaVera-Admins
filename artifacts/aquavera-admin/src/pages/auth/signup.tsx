@@ -10,7 +10,10 @@ import {
   InputGroupButton 
 } from "@/components/ui/input-group";
 
+import { useLanguage } from "@/context/language-context";
+
 export default function SignUp() {
+  const { t } = useLanguage();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -32,7 +35,7 @@ export default function SignUp() {
     formData.password === formData.confirmPassword;
 
   return (
-    <AuthLayout subtitle="FARMER REGISTRATION">
+    <AuthLayout subtitle={t("auth.farmer_registration")}>
       <div className="space-y-4 px-2 pb-6">
         <InputGroup className="h-14 rounded-2xl border-slate-300">
           <InputGroupAddon className="text-primary pl-4">
@@ -40,7 +43,7 @@ export default function SignUp() {
           </InputGroupAddon>
           <InputGroupInput 
             name="fullName"
-            placeholder="Full Name" 
+            placeholder={t("signup.fullname_placeholder")} 
             className="text-lg placeholder:text-primary/60 text-primary"
             value={formData.fullName}
             onChange={handleChange}
@@ -54,7 +57,7 @@ export default function SignUp() {
           <InputGroupInput 
             name="email"
             type="email" 
-            placeholder="Email Address" 
+            placeholder={t("login.email_placeholder")} 
             className="text-lg placeholder:text-primary/60 text-primary"
             value={formData.email}
             onChange={handleChange}
@@ -68,7 +71,7 @@ export default function SignUp() {
           <InputGroupInput 
             name="phone"
             type="tel" 
-            placeholder="Phone Number" 
+            placeholder={t("signup.phone_placeholder")} 
             className="text-lg placeholder:text-primary/60 text-primary"
             value={formData.phone}
             onChange={handleChange}
@@ -82,7 +85,7 @@ export default function SignUp() {
           <InputGroupInput 
             name="password"
             type={showPassword ? "text" : "password"} 
-            placeholder="Password" 
+            placeholder={t("login.password_placeholder")} 
             className="text-lg placeholder:text-primary/60 text-primary"
             value={formData.password}
             onChange={handleChange}
@@ -106,7 +109,7 @@ export default function SignUp() {
           <InputGroupInput 
             name="confirmPassword"
             type={showPassword ? "text" : "password"} 
-            placeholder="Confirm Password" 
+            placeholder={t("signup.confirm_password")} 
             className="text-lg placeholder:text-primary/60 text-primary"
             value={formData.confirmPassword}
             onChange={handleChange}
@@ -119,15 +122,15 @@ export default function SignUp() {
               isFormValid ? "bg-primary hover:bg-primary/90 text-white" : "bg-primary text-white"
             }`}
           >
-            Create Account
+            {t("signup.button")}
           </Button>
         </div>
 
         <div className="flex justify-center pt-2">
           <div className="text-slate-600 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-            Already have an account?{" "}
+            {t("signup.already_account")}{" "}
             <Link href="/auth/login" className="text-primary hover:underline font-bold ml-1">
-              Log In
+              {t("login.button")}
             </Link>
           </div>
         </div>

@@ -23,7 +23,10 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 
+import { useLanguage } from "@/context/language-context";
+
 export default function UserManagement() {
+  const { t } = useLanguage();
   const { data: users, isLoading: isLoadingUsers } = useUsers();
   const { data: farmers, isLoading: isLoadingFarmers } = useFarmers();
   const addUserMutation = useAddUser();
@@ -40,8 +43,8 @@ export default function UserManagement() {
       <AppLayout>
         <div className="flex flex-col items-center justify-center h-[60vh] text-center">
           <Shield className="w-16 h-16 text-muted-foreground mb-4 opacity-50" />
-          <h2 className="text-2xl font-bold text-foreground mb-2">Access Denied</h2>
-          <p className="text-muted-foreground">You do not have administrative privileges to view this page.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">{t("logs.access_denied")}</h2>
+          <p className="text-muted-foreground">{t("logs.restricted")}</p>
         </div>
       </AppLayout>
     );
@@ -57,8 +60,8 @@ export default function UserManagement() {
     });
   };
 
-  const handleDeleteUser = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
+  const handleDeleteUser = (id: string, isFarmer: boolean) => {
+    if (window.confirm(t("users.delete_confirm"))) {
       deleteUserMutation.mutate(id);
     }
   };
@@ -89,15 +92,15 @@ export default function UserManagement() {
       <>
         <div className="flex items-end justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">User Management</h1>
-            <p className="text-muted-foreground mt-1 text-sm">Control access, roles, and view system users.</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("users.title")}</h1>
+            <p className="text-muted-foreground mt-1 text-sm">{t("users.subtitle")}</p>
           </div>
           
           <div className="flex items-center gap-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input 
-                placeholder="Search users..." 
+                placeholder={t("users.search_placeholder")} 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 w-64"
@@ -107,16 +110,16 @@ export default function UserManagement() {
               <DialogTrigger asChild>
                 <Button className="flex items-center gap-2">
                   <UserPlus className="w-4 h-4" />
-                  Add User
+                  {t("users.add_user")}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Add New System User</DialogTitle>
+                  <DialogTitle>{t("users.add_new_title")}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleAddUser} className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Full Name</label>
+                    <label className="text-sm font-medium">{t("users.fullname")}</label>
                     <Input 
                       required 
                       value={newUser.name} 
@@ -126,7 +129,7 @@ export default function UserManagement() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Email Address</label>
+                      <label className="text-sm font-medium">{t("users.email")}</label>
                       <Input 
                         required 
                         type="email"
@@ -136,7 +139,7 @@ export default function UserManagement() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Phone Number</label>
+                      <label className="text-sm font-medium">{t("users.phone")}</label>
                       <Input 
                         required 
                         value={newUser.phone} 
@@ -146,7 +149,7 @@ export default function UserManagement() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Password</label>
+                    <label className="text-sm font-medium">{t("users.password")}</label>
                     <Input 
                       required 
                       type="password"
@@ -156,7 +159,7 @@ export default function UserManagement() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">System Role</label>
+                    <label className="text-sm font-medium">{t("users.system_role")}</label>
                     <select 
                       className="w-full p-2 bg-background border rounded-md text-sm"
                       value={newUser.role}
@@ -167,9 +170,9 @@ export default function UserManagement() {
                     </select>
                   </div>
                   <DialogFooter>
-                    <Button type="button" variant="outline" onClick={() => setIsAddModalOpen(false)}>Cancel</Button>
+                    <Button type="button" variant="outline" onClick={() => setIsAddModalOpen(false)}>{t("common.cancel")}</Button>
                     <Button type="submit" disabled={addUserMutation.isPending}>
-                      {addUserMutation.isPending ? "Creating..." : "Create User"}
+                      {addUserMutation.isPending ? t("users.creating") : t("users.create_button")}
                     </Button>
                   </DialogFooter>
                 </form>
@@ -190,7 +193,7 @@ export default function UserManagement() {
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {tab}
+                {t(`users.tab_${tab.toLowerCase().replace('-', '')}`)}
               </button>
             ))}
           </div>
@@ -199,27 +202,27 @@ export default function UserManagement() {
             <table className="w-full text-left border-collapse">
               <thead className="bg-card sticky top-0 z-10 border-b border-border shadow-sm shadow-black/5">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">User / ID</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("users.col_user_id")}</th>
                   <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    {isFarmersTab ? 'Location' : 'Role'}
+                    {isFarmersTab ? t("users.col_location") : t("users.col_role")}
                   </th>
                   <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    {isFarmersTab ? 'Connections' : 'Status'}
+                    {isFarmersTab ? t("users.col_connections") : t("users.col_status")}
                   </th>
                   <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    {isFarmersTab ? 'Last Sync' : 'Last Login'}
+                    {isFarmersTab ? t("users.col_last_sync") : t("users.col_last_login")}
                   </th>
-                  <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">{t("users.col_actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">Loading {activeTab.toLowerCase()}...</td>
+                    <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">{t("common.loading")}...</td>
                   </tr>
                 ) : filteredData?.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">No {activeTab.toLowerCase()} found.</td>
+                    <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">{t("common.no_results")}</td>
                   </tr>
                 ) : (
                   filteredData?.map((item: any) => (
@@ -246,7 +249,7 @@ export default function UserManagement() {
                             <div className={`w-2 h-2 rounded-full ${item.activeConnections > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
                             <div className="flex items-center gap-1 text-xs font-medium">
                               <Droplets className="w-3.5 h-3.5 text-blue-500" />
-                              <span>{item.activeConnections} Active</span>
+                              <span>{item.activeConnections} {t("farmers.active")}</span>
                             </div>
                           </div>
                         ) : (
@@ -269,10 +272,10 @@ export default function UserManagement() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem 
                               className="text-destructive focus:text-destructive"
-                              onClick={() => handleDeleteUser(item.id)}
+                              onClick={() => handleDeleteUser(item.id, isFarmersTab)}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
-                              Delete {isFarmersTab ? 'Farmer' : 'User'}
+                              {isFarmersTab ? t("users.delete_farmer") : t("users.delete_user")}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

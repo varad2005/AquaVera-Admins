@@ -9,13 +9,16 @@ import {
   InputGroupInput 
 } from "@/components/ui/input-group";
 
+import { useLanguage } from "@/context/language-context";
+
 export default function ForgotPassword() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   if (submitted) {
     return (
-      <AuthLayout subtitle="RECOVERY">
+      <AuthLayout subtitle={t("auth.recovery")}>
         <div className="space-y-6 px-2 pb-6 text-center">
           <div className="flex justify-center">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary">
@@ -23,14 +26,14 @@ export default function ForgotPassword() {
             </div>
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-slate-800">Check your email</h2>
+            <h2 className="text-2xl font-bold text-slate-800">{t("forgot.check_email")}</h2>
             <p className="text-slate-600 font-medium">
-              We've sent password recovery instructions to your email address.
+              {t("forgot.instructions_sent")}
             </p>
           </div>
           <Link href="/auth/login">
             <Button className="w-full h-14 text-xl font-semibold rounded-2xl bg-primary text-white">
-              Back to Login
+              {t("forgot.back_to_login")}
             </Button>
           </Link>
         </div>
@@ -39,11 +42,11 @@ export default function ForgotPassword() {
   }
 
   return (
-    <AuthLayout subtitle="RECOVERY">
+    <AuthLayout subtitle={t("auth.recovery")}>
       <div className="space-y-6 px-2 pb-6">
         <div className="space-y-2 text-center">
           <p className="text-slate-600 font-medium">
-            Enter your email address and we'll send you instructions to reset your password.
+            {t("forgot.enter_email")}
           </p>
         </div>
 
@@ -53,7 +56,7 @@ export default function ForgotPassword() {
           </InputGroupAddon>
           <InputGroupInput 
             type="email" 
-            placeholder="Email Address" 
+            placeholder={t("login.email_placeholder")} 
             className="text-lg placeholder:text-primary/60 text-primary"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -67,12 +70,12 @@ export default function ForgotPassword() {
           disabled={email.length === 0}
           onClick={() => setSubmitted(true)}
         >
-          Send Instructions
+          {t("forgot.send_button")}
         </Button>
 
         <Link href="/auth/login">
           <a className="flex items-center justify-center gap-2 text-slate-400 hover:text-primary text-sm font-medium transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Login
+            <ArrowLeft className="w-4 h-4" /> {t("forgot.back_to_login")}
           </a>
         </Link>
       </div>

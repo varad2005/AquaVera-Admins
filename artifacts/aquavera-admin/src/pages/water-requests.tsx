@@ -8,7 +8,10 @@ import { Link, useLocation } from "wouter";
 import { Search, Filter, SlidersHorizontal, ArrowUpRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+import { useLanguage } from "@/context/language-context";
+
 export default function WaterRequests() {
+  const { t } = useLanguage();
   const { data: requests, isLoading } = useRequests();
   const { toast } = useToast();
   const [location] = useLocation();
@@ -45,8 +48,8 @@ export default function WaterRequests() {
     <AppLayout>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Water Requests</h1>
-          <p className="text-muted-foreground mt-1 text-sm">Manage and verify irrigation allocations.</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("requests.title")}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">{t("requests.subtitle")}</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -54,7 +57,7 @@ export default function WaterRequests() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input 
               type="text" 
-              placeholder="Search ID, Farmer..." 
+              placeholder={t("requests.search_placeholder")} 
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -64,11 +67,11 @@ export default function WaterRequests() {
             />
           </div>
           <button 
-            onClick={() => toast({ title: "Filters", description: "Advanced filtering modal coming soon!" })}
+            onClick={() => toast({ title: t("common.filter"), description: "Advanced filtering modal coming soon!" })}
             className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors"
           >
             <Filter className="w-4 h-4" />
-            Filters
+            {t("common.filter")}
           </button>
         </div>
       </div>
@@ -88,7 +91,7 @@ export default function WaterRequests() {
                   : 'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
-              {status}
+              {t(`status.${status.toLowerCase()}`)}
             </button>
           ))}
         </div>
@@ -97,23 +100,23 @@ export default function WaterRequests() {
           <table className="w-full text-left border-collapse">
             <thead className="bg-muted/50 sticky top-0 z-10 shadow-sm shadow-black/5">
               <tr>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Request ID</th>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Farmer & Location</th>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Crop Details</th>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Geo-Status</th>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">Action</th>
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("requests.id")}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("requests.farmer_location")}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("requests.crop_details")}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("requests.geo_status")}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("requests.status")}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("requests.date")}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border bg-card">
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">Loading requests data...</td>
+                  <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">{t("common.loading")}</td>
                 </tr>
               ) : paginatedRequests?.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">No requests found matching criteria.</td>
+                  <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">{t("common.no_results")}</td>
                 </tr>
               ) : (
                 paginatedRequests?.map((req: WaterRequest) => (
@@ -126,8 +129,8 @@ export default function WaterRequests() {
                       <p className="text-xs text-muted-foreground">{req.village}, {req.district}</p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <p className="text-sm text-foreground">{req.cropType}</p>
-                      <p className="text-xs text-muted-foreground">{req.durationHours} hrs requested</p>
+                      <p className="text-sm text-foreground">{t(`crop.${req.cropType.toLowerCase()}`)}</p>
+                      <p className="text-xs text-muted-foreground">{req.durationHours} {t("requests.hrs_requested")}</p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusBadge status={req.geoStatus} type="geo" />
@@ -156,7 +159,7 @@ export default function WaterRequests() {
         
         <div className="border-t border-border p-4 flex items-center justify-between bg-card">
           <p className="text-sm text-muted-foreground">
-            Showing <span className="font-medium text-foreground">{paginatedRequests?.length || 0}</span> of <span className="font-medium text-foreground">{filteredRequests?.length || 0}</span> results
+            {t("common.showing")} <span className="font-medium text-foreground">{paginatedRequests?.length || 0}</span> {t("common.of")} <span className="font-medium text-foreground">{filteredRequests?.length || 0}</span> {t("common.results")}
           </p>
           <div className="flex items-center gap-2">
             <button 
@@ -164,15 +167,15 @@ export default function WaterRequests() {
               disabled={currentPage === 1}
               className="px-3 py-1.5 border border-border rounded-md text-sm font-medium disabled:opacity-50 hover:bg-muted transition-colors"
             >
-              Previous
+              {t("common.previous")}
             </button>
-            <span className="text-sm text-muted-foreground px-2">Page {currentPage} of {totalPages || 1}</span>
+            <span className="text-sm text-muted-foreground px-2">{t("common.page")} {currentPage} {t("common.of")} {totalPages || 1}</span>
             <button 
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages || totalPages === 0}
               className="px-3 py-1.5 border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50"
             >
-              Next
+              {t("common.next")}
             </button>
           </div>
         </div>

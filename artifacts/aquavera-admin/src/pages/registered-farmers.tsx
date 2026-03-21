@@ -16,7 +16,10 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 
+import { useLanguage } from "@/context/language-context";
+
 export default function RegisteredFarmers() {
+  const { t } = useLanguage();
   const { data: farmers, isLoading } = useFarmers();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
@@ -61,7 +64,7 @@ export default function RegisteredFarmers() {
     link.click();
     document.body.removeChild(link);
     
-    toast({ title: "Export Success", description: `Data for ${farmers.length} farmers exported successfully.` });
+    toast({ title: t("farmers.export_button"), description: `Data for ${farmers.length} farmers exported successfully.` });
   };
 
   const totalActive = farmers?.reduce((acc: number, f: any) => acc + (f.activeConnections > 0 ? 1 : 0), 0) || 0;
@@ -71,8 +74,8 @@ export default function RegisteredFarmers() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Registered Farmers</h1>
-            <p className="text-slate-500 mt-1 text-sm font-medium italic">Directory of registered land owners using AquaVera smart connections.</p>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">{t("farmers.title")}</h1>
+            <p className="text-slate-500 mt-1 text-sm font-medium italic">{t("farmers.subtitle")}</p>
           </div>
           
           <div className="flex items-center gap-3">
@@ -80,7 +83,7 @@ export default function RegisteredFarmers() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input 
                 type="text" 
-                placeholder="Search by name, ID or village..." 
+                placeholder={t("farmers.search_placeholder")} 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 py-2 w-72 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
@@ -92,7 +95,7 @@ export default function RegisteredFarmers() {
               className="rounded-xl border-slate-200 hover:bg-primary/5 hover:text-primary transition-all font-bold gap-2"
             >
               <Download className="w-4 h-4" />
-              Export Data
+              {t("farmers.export_button")}
             </Button>
           </div>
         </div>
@@ -103,7 +106,7 @@ export default function RegisteredFarmers() {
             <div className="absolute top-0 right-0 p-4 opacity-10 transition-opacity group-hover:opacity-20">
               <User className="w-16 h-16 text-primary" />
             </div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Total Enrollment</p>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t("farmers.total_enrollment")}</p>
             <div className="mt-2 flex items-baseline gap-2">
               <span className="text-4xl font-black text-slate-900">{farmers?.length || 0}</span>
               <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">+4% this month</span>
@@ -115,7 +118,7 @@ export default function RegisteredFarmers() {
             <div className="absolute top-0 right-0 p-4 opacity-10 transition-opacity group-hover:opacity-20">
               <Droplets className="w-16 h-16 text-blue-600" />
             </div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Active Connections</p>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t("farmers.active_connections")}</p>
             <div className="mt-2 flex items-baseline gap-2">
               <span className="text-4xl font-black text-slate-900">{totalActive}</span>
               <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{Math.round((totalActive / (farmers?.length || 1)) * 100)}% utilization</span>
@@ -127,12 +130,12 @@ export default function RegisteredFarmers() {
             <div className="absolute top-0 right-0 p-4 opacity-10 transition-opacity group-hover:opacity-20">
               <MapPin className="w-16 h-16 text-orange-600" />
             </div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Regional Coverage</p>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t("farmers.regional_coverage")}</p>
             <div className="mt-2 flex items-baseline gap-2">
               <span className="text-4xl font-black text-slate-900">
                 {Array.from(new Set(farmers?.map((f: any) => f.district))).length || 0}
               </span>
-              <span className="text-xs font-bold text-slate-400 ml-1 italic">Districts reached</span>
+              <span className="text-xs font-bold text-slate-400 ml-1 italic">{t("farmers.districts_reached")}</span>
             </div>
             <p className="text-[10px] text-slate-400 mt-2 font-semibold">Geographic footprint across the state</p>
           </div>
@@ -147,7 +150,7 @@ export default function RegisteredFarmers() {
       ) : filteredFarmers?.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
           <Search className="w-12 h-12 text-slate-300 mb-4" />
-          <h3 className="text-lg font-bold text-slate-900">No farmers found</h3>
+          <h3 className="text-lg font-bold text-slate-900">{t("common.no_results")}</h3>
           <p className="text-slate-500">Try adjusting your search criteria</p>
         </div>
       ) : (
@@ -164,7 +167,7 @@ export default function RegisteredFarmers() {
                     <div className="mt-1 flex items-center gap-1.5 justify-end">
                       <div className={`w-2 h-2 rounded-full ${farmer.activeConnections > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                        {farmer.activeConnections > 0 ? 'Active' : 'Inactive'}
+                        {farmer.activeConnections > 0 ? t("farmers.active") : t("farmers.inactive")}
                       </span>
                     </div>
                   </div>
@@ -183,7 +186,7 @@ export default function RegisteredFarmers() {
                   </div>
                   <div className="flex items-center gap-3 text-slate-600">
                     <Droplets className="w-4 h-4 text-slate-400" />
-                    <span className="text-xs font-bold text-primary">{farmer.totalRequests} Connection Requests</span>
+                    <span className="text-xs font-bold text-primary">{farmer.totalRequests} {t("farmers.connection_requests")}</span>
                   </div>
                 </div>
               </div>
@@ -191,7 +194,7 @@ export default function RegisteredFarmers() {
               <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center group-hover:bg-primary/5 transition-colors">
                 <div className="flex items-center gap-2 text-slate-400">
                   <Calendar className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Last Sync: {format(new Date(farmer.lastConnection), 'MMM dd')}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">{t("farmers.last_sync")}: {format(new Date(farmer.lastConnection), 'MMM dd')}</span>
                 </div>
                 <button className="text-primary hover:text-primary-foreground hover:bg-primary p-2 rounded-lg transition-all">
                   <ArrowRight className="w-4 h-4" />

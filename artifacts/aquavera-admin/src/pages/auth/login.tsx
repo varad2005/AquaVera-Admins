@@ -13,36 +13,58 @@ import {
   InputGroupButton 
 } from "@/components/ui/input-group";
 
+import { useLanguage } from "@/context/language-context";
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setRole } = useRole();
+  const { t } = useLanguage();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   const isFormValid = email.length > 0 && password.length > 0;
 
-  const handleLogin = () => {
-    if (email === "admin@aquavera.gov.in" && password === "admin123") {
-      setRole("Admin");
-      toast({ title: "Login Successful", description: "Welcome back, Admin." });
-      setLocation("/dashboard");
-    } else if (email === "subadmin@aquavera.gov.in" && password === "subadmin123") {
-      setRole("Sub-Admin");
-      toast({ title: "Login Successful", description: "Welcome back, Sub-Admin." });
-      setLocation("/dashboard");
-    } else {
+  const handleLogin = async () => {
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const user = await response.json();
+        setRole(user.role);
+        
+        // Show success toast with user's name
+        const welcomeMsg = user.role === "Admin" ? t("login.welcome_admin") : t("login.welcome_subadmin");
+        toast({ 
+          title: t("login.success_title"), 
+          description: `${welcomeMsg} (${user.name})` 
+        });
+        
+        setLocation("/dashboard");
+      } else {
+        const errorData = await response.json();
+        toast({ 
+          title: t("login.failed_title"), 
+          description: errorData.error || t("login.failed_desc"), 
+          variant: "destructive" 
+        });
+      }
+    } catch (error) {
       toast({ 
-        title: "Login Failed", 
-        description: "Invalid email or password. Use the provided demo credentials.", 
+        title: t("login.failed_title"), 
+        description: "Connection error. Please ensure the server is running.", 
         variant: "destructive" 
       });
     }
   };
 
   return (
-    <AuthLayout subtitle="ADMIN PORTAL">
+    <AuthLayout subtitle={t("auth.admin_portal")}>
       <div className="space-y-6 px-2 pb-6">
         <div className="space-y-4">
           <InputGroup className="h-14 rounded-2xl border-slate-300">
@@ -51,7 +73,7 @@ export default function Login() {
             </InputGroupAddon>
             <InputGroupInput 
               type="email" 
-              placeholder="Email Address" 
+              placeholder={t("login.email_placeholder")} 
               className="text-lg placeholder:text-primary/60 text-primary"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -64,7 +86,7 @@ export default function Login() {
             </InputGroupAddon>
             <InputGroupInput 
               type={showPassword ? "text" : "password"} 
-              placeholder="Password" 
+              placeholder={t("login.password_placeholder")} 
               className="text-lg placeholder:text-primary/60 text-primary"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -89,20 +111,20 @@ export default function Login() {
           }`}
           disabled={!isFormValid}
         >
-          Log In
+          {t("login.button")}
         </Button>
 
         <div className="flex flex-col items-center space-y-4 pt-2">
           <div className="text-slate-600 font-medium">
-            Don't have an account?{" "}
+            {t("login.no_account")}{" "}
             <Link href="/auth/signup" className="text-primary hover:underline font-bold ml-1">
-              Sign Up
+              {t("login.signup_link")}
             </Link>
           </div>
           
-          <Link href="/auth/forgot-password">
+          <Link href="/auth/forget-password">
             <a className="text-slate-400 hover:text-primary text-sm font-medium transition-colors">
-              Forgot Password?
+              {t("login.forgot_password")}
             </a>
           </Link>
         </div>

@@ -9,15 +9,18 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
+import { useLanguage } from "@/context/language-context";
+
 export default function OTPVerification() {
+  const { t } = useLanguage();
   const [value, setValue] = useState("");
 
   return (
-    <AuthLayout subtitle="VERIFICATION">
+    <AuthLayout subtitle={t("auth.verification")}>
       <div className="space-y-8 px-2 pb-6 flex flex-col items-center">
         <div className="text-center space-y-2">
           <p className="text-slate-600 font-medium">
-            We've sent a 6-digit code to your phone number.
+            {t("otp.instructions")}
           </p>
         </div>
 
@@ -45,19 +48,19 @@ export default function OTPVerification() {
             }`}
             disabled={value.length !== 6}
           >
-            Verify OTP
+            {t("otp.verify_button")}
           </Button>
 
           <div className="text-center">
             <button className="text-primary hover:underline font-bold">
-              Resend Code
+              {t("otp.resend")}
             </button>
           </div>
         </div>
 
         <Link href="/auth/login">
           <a className="text-slate-400 hover:text-primary text-sm font-medium transition-colors">
-            Back to Login
+            {t("forgot.back_to_login")}
           </a>
         </Link>
       </div>

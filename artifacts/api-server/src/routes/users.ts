@@ -1,10 +1,33 @@
 import { Router, type IRouter } from "express";
 import { db, users } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 const router: IRouter = Router();
 
-// GET all users
+// POST login
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const [user] = await db.select()
+      .from(users)
+      .where(and(eq(users.email, email), eq(users.password, password)));
+
+    if (!user) {
+      res.status(401).json({ error: "Invalid email or password" });
+      return;
+    }
+
+    if (user.status === "Inactive") {
+      res.status(401).json({ error: "Account is inactive" });
+      return;
+    }
+
+    const { password: _, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+  } catch (error) {
+    res.status(500).json({ error: "Login failed" });
+  }
+});
 router.get("/users", async (req, res) => {
   try {
     const allUsers = await db.select().from(users);

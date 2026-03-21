@@ -6,7 +6,10 @@ interface StatusBadgeProps {
   className?: string;
 }
 
+import { useLanguage } from "@/context/language-context";
+
 export function StatusBadge({ status, type = 'request', className }: StatusBadgeProps) {
+  const { t } = useLanguage();
   let colorClass = "";
 
   if (type === 'request') {
@@ -34,7 +37,7 @@ export function StatusBadge({ status, type = 'request', className }: StatusBadge
 
   return (
     <span className={cn("px-2.5 py-0.5 rounded-md text-xs font-medium border", colorClass, className)}>
-      {status}
+      {t(`status.${status.toLowerCase()}`)}
     </span>
   );
 }

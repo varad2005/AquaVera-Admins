@@ -1,5 +1,6 @@
 import React from "react";
 import { GlobalHeader } from "./global-header";
+import { useLanguage } from "@/context/language-context";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -7,6 +8,7 @@ interface AuthLayoutProps {
 }
 
 export function AuthLayout({ children, subtitle }: AuthLayoutProps) {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       <GlobalHeader />
@@ -24,7 +26,7 @@ export function AuthLayout({ children, subtitle }: AuthLayoutProps) {
               AquaVera
             </h1>
             <p className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase mt-1">
-              {subtitle || "FARMER PORTAL"}
+              {subtitle || t("auth.farmer_portal")}
             </p>
           </div>
           

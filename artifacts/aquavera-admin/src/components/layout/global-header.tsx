@@ -32,9 +32,9 @@ export function GlobalHeader() {
             <a className="flex items-center gap-3 group">
               <img src="/logo.png" alt="Logo" className="w-12 h-12 transition-transform group-hover:scale-105" />
               <div className="flex flex-col border-l pl-3 border-slate-200">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter mb-0.5">Govt. of India | MoA&FW</span>
+                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter mb-0.5">{t("header.gov_india")}</span>
                 <span className="text-xl font-black text-slate-800 tracking-tight leading-none group-hover:text-primary transition-colors">AquaVera</span>
-                <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mt-0.5">Smart Irrigation Portal</span>
+                <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mt-0.5">{t("header.smart_portal")}</span>
               </div>
             </a>
           </Link>
@@ -51,16 +51,17 @@ export function GlobalHeader() {
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center bg-slate-100 rounded-lg px-3 py-1.5 border border-slate-200 mr-1">
             <Search className="w-4 h-4 text-slate-400 mr-2" />
-            <input type="text" placeholder="Search..." className="bg-transparent border-none outline-none text-xs w-20 focus:w-36 transition-all font-medium" />
+            <input type="text" placeholder={t("header.portal")} className="bg-transparent border-none outline-none text-xs w-20 focus:w-36 transition-all font-medium" />
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-2 text-slate-600 font-bold text-[11px] uppercase tracking-wider">
-                <Globe className="w-4 h-4" /> {currentLangName}
+              <Button variant="ghost" size="sm" className="flex items-center gap-2 text-slate-600 font-bold text-[11px] uppercase tracking-wider">
+                <Globe className="w-4 h-4" /> 
+                <span className="hidden sm:inline">{currentLangName}</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="z-[100]">
               {languages.map((lang) => (
                 <DropdownMenuItem 
                   key={lang.code}
