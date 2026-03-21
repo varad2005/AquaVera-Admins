@@ -32,35 +32,41 @@ export default function Dashboard() {
   const { data: requests, isLoading: isLoadingReqs } = useRequests();
   const { data: logs, isLoading: isLoadingLogs } = useLogs();
 
+  const totalRequests = requests?.length || 0;
+  const pendingRequests = requests?.filter((r: WaterRequest) => r.status === 'Pending').length || 0;
+  const flaggedRequests = requests?.filter((r: WaterRequest) => r.status === 'Flagged').length || 0;
+  const totalVolume = requests?.reduce((acc: number, r: WaterRequest) => acc + (r.durationHours * 10), 0) || 0; // Mock calculation: 10m3 per hour
+
   return (
     <AppLayout>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">Operational Dashboard</h1>
-        <p className="text-muted-foreground mt-1 text-sm">Real-time overview of irrigation requests and system health.</p>
-      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-foreground font-sans tracking-tight">Operational Dashboard</h1>
+          <p className="text-muted-foreground mt-1 text-sm font-medium">Real-time overview of irrigation requests and system health.</p>
+        </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard 
           title="Total Requests (7d)" 
-          value="1,247" 
+          value={totalRequests.toLocaleString()} 
           trend={{ value: '12%', isPositive: true }}
           icon={FileText} 
         />
         <StatCard 
           title="Pending Approvals" 
-          value={requests?.filter((r: WaterRequest) => r.status === 'Pending').length || 0} 
+          value={pendingRequests.toLocaleString()} 
           trend={{ value: '3%', isPositive: false }}
           icon={FileWarning} 
         />
         <StatCard 
           title="Volume Allocated (m³)" 
-          value="2,340" 
+          value={totalVolume.toLocaleString()} 
           trend={{ value: '8%', isPositive: true }}
           icon={Droplets} 
         />
         <StatCard 
           title="Flagged Anomalies" 
-          value={requests?.filter((r: WaterRequest) => r.status === 'Flagged').length || 0} 
+          value={flaggedRequests.toLocaleString()} 
           trend={{ value: '2', isPositive: false }}
           icon={CheckCircle2} 
           className="border-amber-200 bg-amber-50/30"
@@ -161,6 +167,7 @@ export default function Dashboard() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </AppLayout>
   );

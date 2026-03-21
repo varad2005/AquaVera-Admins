@@ -124,3 +124,15 @@ export function useLogs() {
   });
 }
 
+// --- Farmers ---
+export function useFarmers() {
+  return useQuery({
+    queryKey: ['farmers'],
+    queryFn: async () => {
+      const res = await fetch('/api/farmers');
+      if (!res.ok) throw new Error('Failed to fetch farmers');
+      return res.json();
+    },
+  });
+}
+

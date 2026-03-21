@@ -10,7 +10,10 @@
   "scripts": {
     "push": "drizzle-kit push --config ./drizzle.config.ts",
     "push-force": "drizzle-kit push --force --config ./drizzle.config.ts",
-    "seed": "tsx ./src/seed.ts"
+    "generate": "drizzle-kit generate --config ./drizzle.config.ts",
+    "migrate": "tsx ./src/migrate.ts",
+    "seed": "tsx ./src/seed.ts",
+    "cleanup": "tsx ./src/cleanup.ts"
   },
   "dependencies": {
     "date-fns": "^3.6.0",

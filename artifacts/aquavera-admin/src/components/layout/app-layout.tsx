@@ -9,7 +9,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <div className="flex-1 ml-64 flex flex-col min-w-0">
         <Header />
         <main className="flex-1 p-8 overflow-y-auto">
-          <div className="max-w-7xl mx-auto w-full">
+          <div className="max-w-7xl mx-auto w-full min-h-[calc(100vh-200px)]">
             {children}
           </div>
         </main>

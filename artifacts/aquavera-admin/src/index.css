@@ -49,8 +49,8 @@
   --radius-sm: 0.125rem;
   --radius: 0.375rem; 
   --radius-md: 0.375rem;
-  --radius-lg: 0.375rem; 
-  --radius-xl: 0.375rem;
+  --radius-lg: 0.5rem; 
+  --radius-xl: 0.75rem;
 }
 
 :root {
@@ -58,8 +58,8 @@
   --background: 210 40% 98%;
   --foreground: 222 47% 11%;
   
-  /* Forest Green Primary (#15803d approx) */
-  --primary: 142 72% 29%;
+  /* Deep Forest Green Primary (NIC/Govt style) */
+  --primary: 153 60% 24%; /* #154c33 approx */
   --primary-foreground: 0 0% 100%;
   
   /* Slate Grays */
@@ -75,7 +75,7 @@
   --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
 
-  --success: 142 72% 29%;
+  --success: 153 60% 24%;
   --success-foreground: 0 0% 100%;
 
   --warning: 38 92% 50%;
@@ -83,7 +83,7 @@
   
   --border: 214 32% 91%;
   --input: 214 32% 91%;
-  --ring: 142 72% 29%;
+  --ring: 153 60% 24%;
   
   --card: 0 0% 100%;
   --card-foreground: 222 47% 11%;
@@ -93,7 +93,7 @@
   --sidebar: 222 47% 11%; /* Dark slate sidebar for authority */
   --sidebar-foreground: 210 40% 98%;
   --sidebar-border: 215 28% 17%;
-  --sidebar-active: 142 72% 29%;
+  --sidebar-active: 153 60% 24%;
   --sidebar-active-foreground: 0 0% 100%;
 
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);

@@ -1,4 +1,4 @@
-import { db, users, waterRequests, auditLogs } from "../src";
+import { db, users, waterRequests, auditLogs, farmers } from "../src";
 import { subDays, subHours } from "date-fns";
 
 async function seed() {
@@ -6,11 +6,64 @@ async function seed() {
 
   const now = new Date();
 
+  // Seed Farmers
+  await db.insert(farmers).values([
+    { 
+      id: "FRM-84920", 
+      name: "Ramesh Patel", 
+      aadhaar: "XXXX-XXXX-4592", 
+      landId: "MH-7/12-84920", 
+      village: "Niphad", 
+      district: "Nashik",
+      totalRequests: 1,
+      activeConnections: 0,
+      lastConnection: subHours(now, 5)
+    },
+    { 
+      id: "FRM-33211", 
+      name: "Sunil Kumar", 
+      aadhaar: "XXXX-XXXX-1102", 
+      landId: "MH-7/12-33211", 
+      village: "Baramati", 
+      district: "Pune",
+      totalRequests: 1,
+      activeConnections: 0,
+      lastConnection: subHours(now, 12)
+    },
+  ]).onConflictDoNothing();
+
   // Seed Users
   await db.insert(users).values([
-    { id: "USR-001", name: "Admin User 1", role: "Admin", status: "Active", lastLogin: subHours(now, 1) },
-    { id: "USR-002", name: "Sub-Admin North", role: "Sub-Admin", status: "Active", lastLogin: subHours(now, 4) },
-    { id: "USR-003", name: "Sub-Admin South", role: "Sub-Admin", status: "Inactive", lastLogin: subDays(now, 5) },
+    { 
+      id: "USR-001", 
+      name: "Admin User 1", 
+      email: "admin1@aquavera.com",
+      phone: "9876543210",
+      password: "password123",
+      role: "Admin", 
+      status: "Active", 
+      lastLogin: subHours(now, 1) 
+    },
+    { 
+      id: "USR-002", 
+      name: "Sub-Admin North", 
+      email: "north@aquavera.com",
+      phone: "9876543211",
+      password: "password123",
+      role: "Sub-Admin", 
+      status: "Active", 
+      lastLogin: subHours(now, 4) 
+    },
+    { 
+      id: "USR-003", 
+      name: "Sub-Admin South", 
+      email: "south@aquavera.com",
+      phone: "9876543212",
+      password: "password123",
+      role: "Sub-Admin", 
+      status: "Inactive", 
+      lastLogin: subDays(now, 5) 
+    },
   ]).onConflictDoNothing();
 
   // Seed Water Requests

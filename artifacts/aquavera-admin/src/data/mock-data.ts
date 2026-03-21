@@ -25,6 +25,9 @@ export interface WaterRequest {
 export interface User {
   id: string;
   name: string;
+  email: string;
+  phone: string;
+  password?: string;
   role: string;
   status: 'Active' | 'Inactive';
   lastLogin: string;
@@ -147,11 +150,11 @@ export const MOCK_REQUESTS: WaterRequest[] = [
 ];
 
 export const MOCK_USERS: User[] = [
-  { id: 'USR-001', name: 'Admin User 1', role: 'Admin', status: 'Active', lastLogin: subHours(now, 1).toISOString() },
-  { id: 'USR-002', name: 'Sub-Admin North', role: 'Sub-Admin', status: 'Active', lastLogin: subHours(now, 4).toISOString() },
-  { id: 'USR-003', name: 'Sub-Admin South', role: 'Sub-Admin', status: 'Inactive', lastLogin: subDays(now, 5).toISOString() },
-  { id: 'USR-004', name: 'Ramesh Patel', role: 'Farmer', status: 'Active', lastLogin: subDays(now, 1).toISOString() },
-  { id: 'USR-005', name: 'Sunil Kumar', role: 'Farmer', status: 'Active', lastLogin: subDays(now, 2).toISOString() },
+  { id: 'USR-001', name: 'Admin User 1', email: 'admin1@example.com', phone: '9876543210', role: 'Admin', status: 'Active', lastLogin: subHours(now, 1).toISOString() },
+  { id: 'USR-002', name: 'Sub-Admin North', email: 'north@example.com', phone: '9876543211', role: 'Sub-Admin', status: 'Active', lastLogin: subHours(now, 4).toISOString() },
+  { id: 'USR-003', name: 'Sub-Admin South', email: 'south@example.com', phone: '9876543212', role: 'Sub-Admin', status: 'Inactive', lastLogin: subDays(now, 5).toISOString() },
+  { id: 'USR-004', name: 'Ramesh Patel', email: 'ramesh@example.com', phone: '9876543213', role: 'Farmer', status: 'Active', lastLogin: subDays(now, 1).toISOString() },
+  { id: 'USR-005', name: 'Sunil Kumar', email: 'sunil@example.com', phone: '9876543214', role: 'Farmer', status: 'Active', lastLogin: subDays(now, 2).toISOString() },
 ];
 
 export const MOCK_LOGS: Log[] = [

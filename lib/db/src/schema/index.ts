@@ -9,6 +9,9 @@ export const userStatusEnum = pgEnum("user_status", ["Active", "Inactive"]);
 export const users = pgTable("users", {
   id: text("id").primaryKey(), // Using text IDs like USR-001
   name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  phone: text("phone").notNull(),
+  password: text("password").notNull(),
   role: text("role").notNull(),
   status: userStatusEnum("status").notNull().default("Active"),
   lastLogin: timestamp("last_login").notNull().defaultNow(),
@@ -33,6 +36,18 @@ export const waterRequests = pgTable("water_requests", {
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 
+export const farmers = pgTable("farmers", {
+  id: text("id").primaryKey(), // Using text IDs like FRM-1001
+  name: text("name").notNull(),
+  aadhaar: text("aadhaar").notNull(),
+  landId: text("land_id").notNull(),
+  village: text("village").notNull(),
+  district: text("district").notNull(),
+  totalRequests: integer("total_requests").notNull().default(0),
+  activeConnections: integer("active_connections").notNull().default(0),
+  lastConnection: timestamp("last_connection").notNull().defaultNow(),
+});
+
 export const auditLogs = pgTable("audit_logs", {
   id: serial("id").primaryKey(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
@@ -49,6 +64,8 @@ export const insertRequestSchema = createInsertSchema(waterRequests);
 export const selectRequestSchema = createSelectSchema(waterRequests);
 export const insertLogSchema = createInsertSchema(auditLogs);
 export const selectLogSchema = createSelectSchema(auditLogs);
+export const insertFarmerSchema = createInsertSchema(farmers);
+export const selectFarmerSchema = createSelectSchema(farmers);
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;

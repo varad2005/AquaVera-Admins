@@ -17,9 +17,15 @@ router.get("/users", async (req, res) => {
 // POST new user
 router.post("/users", async (req, res) => {
   try {
-    const newUser = await db.insert(users).values(req.body).returning();
+    const data = { ...req.body };
+    if (!data.id) {
+      // Generate a simple ID like USR-123 if not provided
+      data.id = `USR-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+    }
+    const newUser = await db.insert(users).values(data).returning();
     res.status(201).json(newUser[0]);
   } catch (error) {
+    console.error("Error creating user:", error);
     res.status(500).json({ error: "Failed to create user" });
   }
 });

@@ -6,9 +6,48 @@ import { useRole } from "@/context/role-context";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ActivityLogs() {
-  const { data: logs, isLoading } = useLogs();
   const { isAdmin } = useRole();
   const { toast } = useToast();
+  const { data: logs, isLoading } = useLogs();
+
+  const handleExportCSV = () => {
+    if (!logs || logs.length === 0) {
+      toast({ 
+        title: "Export Error", 
+        description: "No logs available to export.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    const headers = ["Timestamp", "User", "Role", "Action Event", "IP Address"];
+    const rows = logs.map((log: any) => [
+      format(new Date(log.timestamp), 'yyyy-MM-dd HH:mm:ss'),
+      log.user,
+      log.role,
+      log.action,
+      log.ip
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row: string[]) => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `aqua_vera_audit_logs_${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({ 
+      title: "Export Success", 
+      description: `Audit logs (${logs.length} entries) exported to CSV successfully!` 
+    });
+  };
 
   if (!isAdmin) {
     return (
@@ -38,7 +77,7 @@ export default function ActivityLogs() {
             Last 7 Days
           </button>
           <button 
-            onClick={() => toast({ title: "Export", description: "Audit logs exported to CSV successfully!" })}
+            onClick={handleExportCSV}
             className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-md text-sm font-medium hover:bg-muted transition-colors text-primary border-primary/20 hover:bg-primary/5"
           >
             <Download className="w-4 h-4" />

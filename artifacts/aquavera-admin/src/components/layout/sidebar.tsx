@@ -18,7 +18,8 @@ export function Sidebar() {
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, visible: true },
     { href: "/requests", label: "Water Requests", icon: Droplets, visible: true },
-    { href: "/users", label: "User Management", icon: Users, visible: isAdmin },
+    { href: "/farmers", label: "Registered Farmers", icon: Users, visible: true },
+    { href: "/users", label: "User Management", icon: ShieldCheck, visible: isAdmin },
     { href: "/logs", label: "Activity Logs", icon: FileText, visible: isAdmin },
     { href: "/settings", label: "Settings", icon: Settings, visible: true },
   ];

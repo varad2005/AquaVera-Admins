@@ -12,6 +12,7 @@ if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes("[PASSWORD]")
 }
 
 export default defineConfig({
+  out: "./drizzle",
   schema: "./src/schema/index.ts",
   dialect: "postgresql",
   dbCredentials: {
