@@ -43,7 +43,7 @@ if (process.env.NODE_ENV === "production") {
   }
 
   // Catch-all for SPA routing
-  app.get("*", (req, res, next) => {
+  app.get("(.*)", (req, res, next) => {
     if (req.path.startsWith("/api")) return next();
     res.sendFile(path.join(publicPath, "index.html"));
   });
