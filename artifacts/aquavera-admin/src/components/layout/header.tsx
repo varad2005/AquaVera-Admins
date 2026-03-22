@@ -169,8 +169,8 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-3 cursor-pointer group hover:bg-muted/30 p-1.5 rounded-xl transition-all">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">{user.name}</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{user.role} {t("header.portal")}</p>
+                <p className="text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">{user?.name}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{user?.role} {t("header.portal")}</p>
               </div>
               <div className="bg-primary/10 p-2 rounded-xl border border-primary/20 shadow-sm group-hover:shadow-md transition-all">
                 <User className="w-5 h-5 text-primary" />
@@ -184,8 +184,8 @@ export function Header() {
                   <User className="w-6 h-6 text-primary" />
                 </div>
                 <div className="space-y-0.5">
-                  <h4 className="text-sm font-black text-slate-900 leading-none">{user.name}</h4>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{user.id}</p>
+                  <h4 className="text-sm font-black text-slate-900 leading-none">{user?.name}</h4>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{user?.id}</p>
                 </div>
               </div>
             </div>
@@ -194,15 +194,15 @@ export function Header() {
               <div className="px-4 py-3 space-y-3">
                 <div className="flex items-center gap-3 text-slate-500">
                   <Mail className="w-3.5 h-3.5" />
-                  <span className="text-xs font-bold">{user.email}</span>
+                  <span className="text-xs font-bold">{user?.email}</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-500">
                   <Phone className="w-3.5 h-3.5" />
-                  <span className="text-xs font-bold">{user.phone}</span>
+                  <span className="text-xs font-bold">{user?.phone}</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-500">
                   <Building2 className="w-3.5 h-3.5" />
-                  <span className="text-xs font-bold">{user.department}</span>
+                  <span className="text-xs font-bold">{user?.department}</span>
                 </div>
               </div>
 

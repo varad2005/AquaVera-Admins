@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/language-context";
 export default function Settings() {
   const { t } = useLanguage();
   const { role, user } = useRole();
+  if (!user) return null;
 
   return (
     <AppLayout>

@@ -1,4 +1,4 @@
-import { db, users, waterRequests, auditLogs } from "../src";
+import { db, users, waterRequests, auditLogs, WaterRequest, User } from "../src";
 import { subDays, subHours } from "date-fns";
 import { sql } from "drizzle-orm";
 
@@ -41,16 +41,16 @@ async function seed() {
       { id: "F-017", name: "Sachin Kale", email: "sachin@farmer.com", phone: "9910101017", role: "Farmer", city: "Georai", taluka: "Beed", status: "Active", isProfileComplete: 1 },
     ];
 
-    // Add common fields to all users
     const usersToInsert = userData.map(u => ({
       ...u,
       password: "password123",
       aadhaar: u.role === "Farmer" ? `XXXX-XXXX-${Math.floor(1000 + Math.random() * 9000)}` : null,
       landRecordId: u.role === "Farmer" ? `MH-7/12-${Math.floor(10000 + Math.random() * 89999)}` : null,
-      lastLogin: subHours(now, Math.floor(Math.random() * 24))
+      lastLogin: subHours(now, Math.floor(Math.random() * 24)),
+      status: u.status as "Active" | "Inactive"
     }));
 
-    await db.insert(users).values(usersToInsert);
+    await db.insert(users).values(usersToInsert as any);
 
     // 2.2 WATER REQUESTS (One for each farmer - 17 requests)
     const farmers = userData.filter(u => u.role === "Farmer");
@@ -67,15 +67,15 @@ async function seed() {
       durationHours: 8 + (i % 16),
       startDate: subDays(now, i % 5),
       calculatedBilling: (8 + (i % 16)) * 150,
-      geoStatus: i % 10 === 0 ? "Invalid" : "Valid",
-      status: i % 10 === 0 ? "Pending" : "Approved",
+      geoStatus: (i % 10 === 0 ? "Invalid" : "Valid") as "Valid" | "Invalid" | "Pending",
+      status: (i % 10 === 0 ? "Pending" : "Approved") as "Pending" | "Approved" | "Rejected" | "Flagged",
       confidenceScore: 70 + Math.floor(Math.random() * 29),
       ndviIndex: 0.4 + (Math.random() * 0.5),
       timestamp: subDays(now, i % 10),
       paymentStatus: i % 2 === 0 ? "Paid" : "Unpaid"
     }));
 
-    await db.insert(waterRequests).values(requestData);
+    await db.insert(waterRequests).values(requestData as any);
 
     // 2.3 AUDIT LOGS
     const logData = [
