@@ -7,6 +7,12 @@ if (process.env.NODE_ENV !== "production") {
   dotenv.config({ path: envPath });
 }
 
+// Pre-import check for required env vars to avoid silent crashes during dependency resolution
+if (process.env.NODE_ENV === "production" && !process.env.DATABASE_URL) {
+  console.error("FATAL: DATABASE_URL is not set in the production environment!");
+  process.exit(1);
+}
+
 import app from "./app";
 import { logger } from "./lib/logger";
 
