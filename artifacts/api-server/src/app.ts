@@ -1,3 +1,4 @@
+import path from "path";
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
@@ -30,5 +31,17 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use("/api", router);
+
+// Serve static files in production
+if (process.env.NODE_ENV === "production") {
+  const publicPath = path.resolve(import.meta.dirname, "public");
+  app.use(express.static(publicPath));
+
+  // Catch-all for SPA routing
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) return next();
+    res.sendFile(path.join(publicPath, "index.html"));
+  });
+}
 
 export default app;

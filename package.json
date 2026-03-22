@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "pnpm -r --filter @workspace/api-server --filter @workspace/aquavera-admin --parallel run dev",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "build:unified": "pnpm -F @workspace/aquavera-admin build && pnpm -F @workspace/api-server build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },

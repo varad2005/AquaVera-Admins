@@ -1,7 +1,7 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import { build as esbuild } from "esbuild";
-import { rm, readFile } from "fs/promises";
+import { rm, readFile, cp, mkdir } from "fs/promises";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,6 +69,14 @@ async function buildAll() {
     external: externals,
     logLevel: "info",
   });
+
+  console.log("copying frontend assets...");
+  const frontendDist = path.resolve(__dirname, "../aquavera-admin/dist/public");
+  const backendPublic = path.resolve(distDir, "public");
+  
+  await mkdir(backendPublic, { recursive: true });
+  await cp(frontendDist, backendPublic, { recursive: true });
+  console.log("unified build complete.");
 }
 
 buildAll().catch((err) => {
