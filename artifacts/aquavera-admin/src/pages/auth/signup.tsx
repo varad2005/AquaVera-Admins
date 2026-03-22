@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/input-group";
 
 import { useLanguage } from "@/context/language-context";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export default function SignUp() {
   const { t } = useLanguage();
@@ -43,7 +44,7 @@ export default function SignUp() {
   const handleSignUp = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/signup", {
+      const response = await fetch(`${API_BASE_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

@@ -13,6 +13,7 @@ import {
 import { useLocation, Link } from "wouter";
 import { useRole } from "@/context/role-context";
 import { useLanguage } from "@/context/language-context";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export default function PaymentPage() {
   const { user } = useRole();
@@ -64,14 +65,14 @@ export default function PaymentPage() {
       const requestId = params.get('requestId');
       
       if (requestId === 'all') {
-        const res = await fetch(`/api/requests/pay-all`, {
+        const res = await fetch(`${API_BASE_URL}/requests/pay-all`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ farmerName: user.name })
         });
         if (!res.ok) throw new Error('Failed to update bulk payment');
       } else if (requestId) {
-        const res = await fetch(`/api/requests/${requestId}/pay`, {
+        const res = await fetch(`${API_BASE_URL}/requests/${requestId}/pay`, {
           method: 'PATCH',
         });
         if (!res.ok) throw new Error('Failed to update payment');

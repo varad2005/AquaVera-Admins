@@ -1,8 +1,11 @@
 import path from "path";
 import dotenv from "dotenv";
 
-// Load .env from workspace root BEFORE any other imports
-dotenv.config({ path: path.resolve(import.meta.dirname, "../../../.env") });
+// Load .env from workspace root BEFORE any other imports, but only in development
+if (process.env.NODE_ENV !== "production") {
+  const envPath = path.resolve(process.cwd(), ".env");
+  dotenv.config({ path: envPath });
+}
 
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";

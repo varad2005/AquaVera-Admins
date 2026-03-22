@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/language-context";
+import { API_BASE_URL } from "@/lib/api-config";
 import { 
   User, 
   MapPin, 
@@ -90,7 +91,7 @@ export default function CompleteProfile() {
       if (!userStr) throw new Error("User session not found");
       const user = JSON.parse(userStr);
 
-      const response = await fetch(`/api/users/profile/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/profile/${user.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

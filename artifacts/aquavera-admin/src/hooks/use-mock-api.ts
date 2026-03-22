@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { WaterRequest, RequestStatus, Log, User } from '@/data/mock-data';
+import { API_BASE_URL } from '@/lib/api-config';
 
 // --- Requests ---
 export function useRequests() {
@@ -136,7 +137,7 @@ export function useLogs() {
   return useQuery({
     queryKey: ['logs'],
     queryFn: async () => {
-      const res = await fetch('/api/logs');
+      const res = await fetch(`${API_BASE_URL}/logs`);
       if (!res.ok) throw new Error('Failed to fetch logs');
       return res.json();
     },
@@ -148,10 +149,9 @@ export function useFarmers() {
   return useQuery({
     queryKey: ['farmers'],
     queryFn: async () => {
-      const res = await fetch('/api/farmers');
+      const res = await fetch(`${API_BASE_URL}/farmers`);
       if (!res.ok) throw new Error('Failed to fetch farmers');
       return res.json();
     },
   });
 }
-

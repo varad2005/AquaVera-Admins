@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/input-group";
 
 import { useLanguage } from "@/context/language-context";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +29,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
