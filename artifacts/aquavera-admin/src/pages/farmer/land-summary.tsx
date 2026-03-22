@@ -13,20 +13,22 @@ import {
   Map as MapIcon
 } from "lucide-react";
 import { format } from "date-fns";
+import { useLanguage } from "@/context/language-context";
 
 export default function LandSummary() {
   const { user } = useRole();
+  const { t } = useLanguage();
   if (!user) return null;
 
   const landDetails = [
-    { label: "Survey Number", value: user.surveyNumber || "42/A-1" },
-    { label: "7/12 Number", value: user.landRecordId || "MH-NGP-2023-8841" },
-    { label: "Plot Number", value: user.plotNumber || "Zone-7/B" },
-    { label: "Total Area", value: "5.5 Acres" },
-    { label: "State", value: user.state || "Maharashtra" },
-    { label: "Taluka", value: user.taluka || "Niphad" },
-    { label: "Village/City", value: user.city || "Nashik" },
-    { label: "Pincode", value: user.pinCode || "422303" },
+    { label: t("land.survey_no"), value: user.surveyNumber || "42/A-1" },
+    { label: t("land.record_no"), value: user.landRecordId || "MH-NGP-2023-8841" },
+    { label: t("land.plot_no"), value: user.plotNumber || "Zone-7/B" },
+    { label: t("land.total_area"), value: "5.5 " + t("unit.acre") + "s" },
+    { label: t("land.state"), value: user.state || "Maharashtra" },
+    { label: t("land.taluka"), value: user.taluka || "Niphad" },
+    { label: t("land.village"), value: user.city || "Nashik" },
+    { label: t("land.pincode"), value: user.pinCode || "422303" },
   ];
 
   return (
@@ -36,12 +38,12 @@ export default function LandSummary() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none">
-              Land Summary
+              {t("land.title")}
             </h1>
-            <p className="text-slate-500 font-medium tracking-tight">Verified agricultural records and plot mapping</p>
+            <p className="text-slate-500 font-medium tracking-tight">{t("land.subtitle")}</p>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-2xl text-xs font-black uppercase tracking-widest border border-emerald-100">
-            <ShieldCheck className="w-4 h-4" /> Verified by Govt. Grid
+            <ShieldCheck className="w-4 h-4" /> {t("land.verified_govt")}
           </div>
         </div>
 
@@ -52,10 +54,10 @@ export default function LandSummary() {
               <div className="bg-slate-900 p-6 flex items-center justify-between">
                 <h3 className="text-white font-black tracking-tight flex items-center gap-3">
                   <Landmark className="w-5 h-5 text-emerald-400" />
-                  Property Particulars
+                  {t("land.particulars")}
                 </h3>
                 <button className="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition-colors">
-                  Request Update
+                  {t("land.request_update")}
                 </button>
               </div>
               <CardContent className="p-8">
@@ -76,7 +78,7 @@ export default function LandSummary() {
                   <Layers className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-black text-slate-800 tracking-tight">Soil Composition</h4>
+                  <h4 className="font-black text-slate-800 tracking-tight">{t("land.soil")}</h4>
                   <p className="text-xs text-slate-400 font-medium">Loamy Soil - High Water Retention</p>
                 </div>
               </Card>
@@ -85,7 +87,7 @@ export default function LandSummary() {
                   <Navigation className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-black text-slate-800 tracking-tight">Elevation Profile</h4>
+                  <h4 className="font-black text-slate-800 tracking-tight">{t("land.elevation")}</h4>
                   <p className="text-xs text-slate-400 font-medium">564m ASL - Gentle Slope North</p>
                 </div>
               </Card>
@@ -105,8 +107,8 @@ export default function LandSummary() {
                     <MapIcon className="w-8 h-8" />
                   </div>
                   <p className="text-white font-black tracking-tight text-center">
-                    Satellite Live View<br/>
-                    <span className="text-[10px] text-emerald-400 uppercase tracking-widest">Plot #42/A-1 Center</span>
+                    {t("land.satellite_view")}<br/>
+                    <span className="text-[10px] text-emerald-400 uppercase tracking-widest">{t("land.plot_no")} #42/A-1 Center</span>
                   </p>
                 </div>
 
@@ -125,7 +127,7 @@ export default function LandSummary() {
             <Card className="rounded-3xl border-none shadow-sm p-6 bg-slate-900 text-white space-y-4">
               <div className="flex items-center gap-3">
                 <FileText className="w-5 h-5 text-emerald-400" />
-                <h4 className="font-black tracking-tight">Digital Documents</h4>
+                <h4 className="font-black tracking-tight">{t("land.documents")}</h4>
               </div>
               <div className="space-y-2">
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between hover:bg-white/10 cursor-pointer transition-colors">

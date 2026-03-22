@@ -19,7 +19,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setRole, setUser } = useRole();
+  const { setRole, setUser, user } = useRole();
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -71,14 +71,14 @@ export default function Login() {
     } catch (error) {
       toast({ 
         title: t("login.failed_title"), 
-        description: "Connection error. Please ensure the server is running.", 
+        description: t("login.connection_error"), 
         variant: "destructive" 
       });
     }
   };
 
   return (
-    <AuthLayout subtitle={t("auth.admin_portal")}>
+    <AuthLayout subtitle={user?.role === 'Farmer' ? t("auth.farmer_portal") : t("auth.admin_portal")}>
       <div className="space-y-6 px-2 pb-6">
         <div className="space-y-4">
           <InputGroup className="h-14 rounded-2xl border-slate-300">

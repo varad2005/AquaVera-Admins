@@ -14,9 +14,11 @@ import {
   Fingerprint
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/language-context";
 
 export default function ProfileSummary() {
   const { user } = useRole();
+  const { t } = useLanguage();
   if (!user) return null;
 
   return (
@@ -26,12 +28,12 @@ export default function ProfileSummary() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none">
-              My Profile
+              {t("profile.title")}
             </h1>
-            <p className="text-slate-500 font-medium tracking-tight">Manage your personal and contact verification details</p>
+            <p className="text-slate-500 font-medium tracking-tight">{t("profile.subtitle")}</p>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-2xl text-xs font-black uppercase tracking-widest border border-emerald-100">
-            <ShieldCheck className="w-4 h-4" /> K-Verified Account
+            <ShieldCheck className="w-4 h-4" /> {t("profile.verified_account")}
           </div>
         </div>
 
@@ -51,7 +53,7 @@ export default function ProfileSummary() {
             <CardContent className="pt-16 pb-8 px-8 space-y-6">
               <div>
                 <h2 className="text-2xl font-black text-slate-900 leading-tight">{user.name}</h2>
-                <p className="text-sm font-bold text-emerald-600">Verified Farmer ID: AV-FRM-{user.id.slice(-4).toUpperCase()}</p>
+                <p className="text-sm font-bold text-emerald-600">{t("profile.farmer_id")}: AV-FRM-{user.id.slice(-4).toUpperCase()}</p>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-slate-50">
@@ -60,7 +62,7 @@ export default function ProfileSummary() {
                     <Mail className="w-4 h-4" />
                   </div>
                   <div className="space-y-0.5">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Email Address</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{t("profile.email")}</p>
                     <p className="text-sm font-bold text-slate-800">{user.email || "ramesh.patil@example.com"}</p>
                   </div>
                 </div>
@@ -69,14 +71,14 @@ export default function ProfileSummary() {
                     <Phone className="w-4 h-4" />
                   </div>
                   <div className="space-y-0.5">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Phone Number</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{t("profile.phone")}</p>
                     <p className="text-sm font-bold text-slate-800">{user.phone || "+91 98XXX XXX01"}</p>
                   </div>
                 </div>
               </div>
 
               <Button className="w-full rounded-2xl bg-slate-900 hover:bg-emerald-600 h-14 font-black text-sm uppercase tracking-widest gap-2">
-                <Edit2 className="w-4 h-4" /> Edit Basic Details
+                <Edit2 className="w-4 h-4" /> {t("profile.edit")}
               </Button>
             </CardContent>
           </Card>
@@ -87,14 +89,14 @@ export default function ProfileSummary() {
               <div className="p-8 border-b border-slate-50 flex items-center justify-between">
                 <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-3">
                   <Fingerprint className="w-6 h-6 text-emerald-600" />
-                  Government Verification
+                  {t("profile.govt_verification")}
                 </h3>
               </div>
               <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aadhaar Card (Masked)</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("profile.aadhaar")}</p>
                   <p className="text-lg font-bold text-slate-800">XXXX-XXXX-4592</p>
-                  <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest bg-emerald-50 w-fit px-2 py-0.5 rounded">Linked & Active</p>
+                  <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest bg-emerald-50 w-fit px-2 py-0.5 rounded">{t("profile.linked_active")}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Land Record (7/12)</p>
@@ -108,27 +110,27 @@ export default function ProfileSummary() {
               <div className="p-8 border-b border-slate-50 flex items-center justify-between">
                 <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-3">
                   <MapPin className="w-6 h-6 text-emerald-600" />
-                  Primary Location
+                  {t("profile.location")}
                 </h3>
                 <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:bg-emerald-50">
-                  Update Location
+                  {t("profile.update_location")}
                 </Button>
               </div>
               <CardContent className="p-8 grid grid-cols-2 md:grid-cols-3 gap-8">
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">State</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("land.state")}</p>
                   <p className="text-sm font-bold text-slate-800">{user.state || "Maharashtra"}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Taluka</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("land.taluka")}</p>
                   <p className="text-sm font-bold text-slate-800">{user.taluka || "Niphad"}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Village</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("land.village")}</p>
                   <p className="text-sm font-bold text-slate-800">{user.city || "Nashik"}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pin Code</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("land.pincode")}</p>
                   <p className="text-sm font-bold text-slate-800">{user.pinCode || "422303"}</p>
                 </div>
               </CardContent>
@@ -139,8 +141,8 @@ export default function ProfileSummary() {
                 <Calendar className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-black text-slate-800 tracking-tight">Profile Last Updated</h4>
-                <p className="text-xs text-slate-400 font-medium">Synced with AquaVera Central Grid on Jan 14, 2026</p>
+                <h4 className="font-black text-slate-800 tracking-tight">{t("profile.last_updated")}</h4>
+                <p className="text-xs text-slate-400 font-medium">{t("profile.synced")} on Jan 14, 2026</p>
               </div>
             </div>
           </div>

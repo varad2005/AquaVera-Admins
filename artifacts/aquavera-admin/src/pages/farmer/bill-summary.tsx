@@ -19,10 +19,12 @@ import { format } from "date-fns";
 import { StatusBadge } from "@/components/ui-custom/status-badge";
 import { WaterRequest } from "@/data/mock-data";
 import { useLocation } from "wouter";
+import { useLanguage } from "@/context/language-context";
 
 export default function BillSummary() {
   const { user } = useRole();
   const [, setLocation] = useLocation();
+  const { t } = useLanguage();
 
   if (!user) return null;
   const { data: allRequests } = useRequests();
@@ -49,15 +51,15 @@ export default function BillSummary() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none">
-              Bill Summary
+              {t("bill.title")}
             </h1>
-            <p className="text-slate-500 font-medium tracking-tight">Financial oversight of your irrigation usage</p>
+            <p className="text-slate-500 font-medium tracking-tight">{t("farmer.irrigation_oversight")}</p>
           </div>
           <button 
             onClick={() => setLocation(`/payment?amount=${paymentPending}&requestId=all`)}
             className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl text-sm font-bold shadow-xl shadow-slate-900/20 hover:bg-emerald-600 transition-all duration-300"
           >
-            Pay Dues <ArrowUpRight className="w-4 h-4" />
+            {t("bill.pay_dues")} <ArrowUpRight className="w-4 h-4" />
           </button>
         </div>
 
@@ -68,11 +70,11 @@ export default function BillSummary() {
               <div className="p-2.5 rounded-xl bg-white/10 border border-white/20">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
-              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-200">Payment Done</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-200">{t("farmer.payment_done")}</span>
             </div>
             <div>
               <p className="text-3xl font-black tracking-tight">{formatCurrency(paymentDone)}</p>
-              <p className="text-emerald-100/60 text-[10px] font-medium mt-1 text-nowrap">Cleared transactions</p>
+              <p className="text-emerald-100/60 text-[10px] font-medium mt-1 text-nowrap">{t("farmer.paid_desc")}</p>
             </div>
           </Card>
 
@@ -81,11 +83,11 @@ export default function BillSummary() {
               <div className="p-2.5 rounded-xl bg-white/10 border border-white/20">
                 <AlertCircle className="w-5 h-5" />
               </div>
-              <span className="text-[9px] font-black uppercase tracking-widest text-rose-200">Payment Pending</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-rose-200">{t("farmer.payment_pending")}</span>
             </div>
             <div>
               <p className="text-3xl font-black tracking-tight">{formatCurrency(paymentPending)}</p>
-              <p className="text-rose-100/60 text-[10px] font-medium mt-1 text-nowrap">Awaiting settlement</p>
+              <p className="text-rose-100/60 text-[10px] font-medium mt-1 text-nowrap">{t("farmer.pending_desc")}</p>
             </div>
           </Card>
 
@@ -94,11 +96,11 @@ export default function BillSummary() {
               <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600">
                 <Clock className="w-5 h-5" />
               </div>
-              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Approval Pending</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{t("farmer.approval_pending")}</span>
             </div>
             <div>
               <p className="text-2xl font-black text-slate-800 tracking-tight">{formatCurrency(pendingApproval)}</p>
-              <p className="text-slate-400 text-[10px] font-medium mt-1 text-nowrap">In verification queue</p>
+              <p className="text-slate-400 text-[10px] font-medium mt-1 text-nowrap">{t("farmer.queue_desc")}</p>
             </div>
           </Card>
 
@@ -107,11 +109,11 @@ export default function BillSummary() {
               <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600">
                 <TrendingDown className="w-5 h-5" />
               </div>
-              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Usage Trend</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{t("farmer.usage_trend")}</span>
             </div>
             <div>
-              <p className="text-2xl font-black text-slate-800 tracking-tight">-12% <span className="text-sm font-bold text-slate-400">Liters</span></p>
-              <p className="text-slate-400 text-[10px] font-medium mt-1 text-nowrap">Vs previous month</p>
+              <p className="text-2xl font-black text-slate-800 tracking-tight">-12% <span className="text-sm font-bold text-slate-400">{t("unit.liters")}</span></p>
+              <p className="text-slate-400 text-[10px] font-medium mt-1 text-nowrap">{t("farmer.prev_month")}</p>
             </div>
           </Card>
         </div>
@@ -121,7 +123,7 @@ export default function BillSummary() {
           <div className="bg-slate-900 p-6 flex items-center justify-between">
             <h3 className="text-white font-black tracking-tight flex items-center gap-3">
               <Receipt className="w-5 h-5 text-emerald-400" />
-              Billing History
+              {t("bill.history_title")}
             </h3>
             <div className="flex items-center gap-2">
               <button className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors">
@@ -137,12 +139,12 @@ export default function BillSummary() {
               <table className="w-full text-left">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100">
-                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Request ID</th>
-                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Date</th>
-                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Crop</th>
-                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Consumption</th>
-                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Amount</th>
-                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Status</th>
+                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("bill.request_id")}</th>
+                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("bill.date")}</th>
+                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("bill.crop")}</th>
+                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("bill.consumption")}</th>
+                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("bill.amount")}</th>
+                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">{t("bill.status")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
@@ -159,7 +161,7 @@ export default function BillSummary() {
                         <span className="text-xs font-bold text-slate-800">{req.cropType}</span>
                       </td>
                       <td className="px-8 py-6 text-xs font-medium text-slate-600">
-                        {req.durationHours * 50}k Liters
+                        {req.durationHours * 50}k {t("unit.liters")}
                       </td>
                       <td className="px-8 py-6">
                         <span className="text-sm font-black text-slate-900">{formatCurrency(req.calculatedBilling)}</span>
@@ -172,7 +174,7 @@ export default function BillSummary() {
                               ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
                               : "bg-rose-50 text-rose-700 border-rose-100"
                           )}>
-                            {req.paymentStatus === 'Paid' ? 'PAID' : 'UNPAID'}
+                            {req.paymentStatus === 'Paid' ? t("bill.paid") : t("bill.unpaid")}
                           </span>
                         )}
                         <div className="flex items-center justify-end gap-2">
@@ -185,7 +187,7 @@ export default function BillSummary() {
                               }}
                               className="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 active:scale-95"
                             >
-                              Pay Now
+                              {t("bill.pay_now")}
                             </button>
                           )}
                         </div>
@@ -199,7 +201,7 @@ export default function BillSummary() {
             {farmerRequests.length === 0 && (
               <div className="p-20 text-center space-y-4">
                 <AlertCircle className="w-12 h-12 text-slate-200 mx-auto" />
-                <p className="text-slate-400 font-medium">No billing history found.</p>
+                <p className="text-slate-400 font-medium">{t("bill.no_history")}</p>
               </div>
             )}
           </CardContent>

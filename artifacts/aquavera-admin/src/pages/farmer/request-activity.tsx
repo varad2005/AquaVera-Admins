@@ -9,9 +9,11 @@ import { WaterRequest } from "@/data/mock-data";
 import { Link } from "wouter";
 import { ArrowLeft, Droplets, Calendar, Clock, MapPin, ChevronRight, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/language-context";
 
 export default function RequestActivity() {
   const { user } = useRole();
+  const { t } = useLanguage();
   if (!user) return null;
   const { data: allRequests, isLoading } = useRequests();
 
@@ -29,27 +31,27 @@ export default function RequestActivity() {
               </Button>
             </Link>
             <div className="space-y-0.5">
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Request Activity</h1>
-              <p className="text-xs text-slate-500 font-medium tracking-tight">History of all your water allocation requests</p>
+              <h1 className="text-2xl font-black text-slate-900 tracking-tight">{t("activity.title")}</h1>
+              <p className="text-xs text-slate-500 font-medium tracking-tight">{t("activity.subtitle")}</p>
             </div>
           </div>
           <Button variant="outline" className="rounded-xl border-slate-200 gap-2 font-bold text-xs h-10 px-4">
-            <Filter className="w-3.5 h-3.5" /> Filter Results
+            <Filter className="w-3.5 h-3.5" /> {t("common.filter")}
           </Button>
         </div>
 
         {/* Requests List */}
         {isLoading ? (
           <div className="flex items-center justify-center h-64 text-slate-400 font-medium">
-            Loading your activity...
+            {t("activity.loading")}
           </div>
         ) : farmerRequests.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-20 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200 text-center space-y-4">
             <Droplets className="w-12 h-12 text-slate-300" />
-            <h3 className="text-xl font-black text-slate-800">No requests found</h3>
-            <p className="text-slate-500 text-sm max-w-xs">You haven't submitted any water requests yet.</p>
+            <h3 className="text-xl font-black text-slate-800">{t("activity.no_requests")}</h3>
+            <p className="text-slate-500 text-sm max-w-xs">{t("activity.no_requests_desc")}</p>
             <Link href="/requests/new">
-              <Button className="mt-4 rounded-xl bg-slate-900 px-6 font-bold">Request Now</Button>
+              <Button className="mt-4 rounded-xl bg-slate-900 px-6 font-bold">{t("activity.request_now")}</Button>
             </Link>
           </div>
         ) : (
@@ -75,7 +77,7 @@ export default function RequestActivity() {
                       </div>
                       <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
                         <Clock className="w-3.5 h-3.5" />
-                        {req.durationHours} Hours
+                        {req.durationHours} {t("detail.hours")}
                       </div>
                       <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
                         <MapPin className="w-3.5 h-3.5" />
@@ -87,11 +89,11 @@ export default function RequestActivity() {
 
                 <div className="flex items-center justify-between md:justify-end gap-6 md:gap-10 border-t md:border-t-0 pt-4 md:pt-0 border-slate-50">
                   <div className="text-right">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Billing</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{t("activity.billing")}</p>
                     <p className="text-xl font-black text-slate-900">{formatCurrency(req.calculatedBilling)}</p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Status</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{t("activity.status")}</p>
                     <StatusBadge status={req.status} className="px-3 py-1 rounded-full text-[10px]" />
                   </div>
                 </div>

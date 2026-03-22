@@ -12,6 +12,7 @@ import {
   CreditCard,
   UserCircle,
   Activity,
+  Map as MapIcon,
 } from "lucide-react";
 import { useRole } from "@/context/role-context";
 import { useLanguage } from "@/context/language-context";
@@ -31,11 +32,12 @@ export function Sidebar() {
     },
     { href: "/requests", label: t("sidebar.requests"), icon: Droplets, visible: role !== 'Farmer' },
     { href: "/farmers", label: t("sidebar.farmers"), icon: Users, visible: role !== 'Farmer' },
+    { href: "/survey-map", label: t("sidebar.survey_map") || "Survey Map", icon: MapIcon, visible: role !== 'Farmer' },
     
     // Farmer-only items (Shifted from Quick Access)
-    { href: "/land-summary", label: "Land summary", icon: Landmark, visible: role === 'Farmer' },
-    { href: "/bills", label: "Bill summary", icon: CreditCard, visible: role === 'Farmer' },
-    { href: "/request-activity", label: "Request activity", icon: Activity, visible: role === 'Farmer' },
+    { href: "/land-summary", label: t("sidebar.land_summary"), icon: Landmark, visible: role === 'Farmer' },
+    { href: "/bills", label: t("sidebar.bill_summary"), icon: CreditCard, visible: role === 'Farmer' },
+    { href: "/request-activity", label: t("sidebar.request_activity"), icon: Activity, visible: role === 'Farmer' },
 
     { href: "/users", label: t("sidebar.users"), icon: ShieldCheck, visible: isAdmin },
     { href: "/logs", label: t("sidebar.logs"), icon: FileText, visible: isAdmin },

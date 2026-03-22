@@ -99,7 +99,10 @@ export default function CompleteProfile() {
       if (response.ok) {
         const updatedUser = await response.json();
         localStorage.setItem("user", JSON.stringify(updatedUser)); 
-        toast({ title: "Verification Successful", description: "Your farmer profile has been established." });
+        toast({ 
+          title: t("signup.success_title"), 
+          description: t("signup.success_desc").replace("{name}", user.name)
+        });
         setLocation("/dashboard/farmer");
       } else {
         const err = await response.json();
@@ -123,13 +126,13 @@ export default function CompleteProfile() {
       <main className="flex-1 p-8 max-w-5xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <div className="text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black uppercase tracking-widest border border-emerald-200">
-            <BadgeCheck className="w-3.5 h-3.5" /> Identity Verification Required
+            <BadgeCheck className="w-3.5 h-3.5" /> {t("profile.id_req")}
           </div>
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-            Establish Your <span className="text-emerald-600">Farmer Profile</span>
+            {t("profile.establish")}
           </h1>
           <p className="text-slate-500 font-medium max-w-2xl mx-auto">
-            Please provide your official documentation to sync your land records with the AquaVera Smart Irrigation Grid.
+            {t("profile.doc_sync")}
           </p>
         </div>
 
@@ -142,15 +145,15 @@ export default function CompleteProfile() {
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-black text-lg">Identity & Land Assets</h3>
-                  <p className="text-slate-400 text-xs font-medium">Verify your citizenship and ownership</p>
+                  <h3 className="font-black text-lg">{t("profile.identity_assets")}</h3>
+                  <p className="text-slate-400 text-xs font-medium">{t("profile.verify_ownership")}</p>
                 </div>
               </div>
-              <div className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Section 01</div>
+              <div className="text-slate-500 text-[10px] font-black uppercase tracking-widest">{t("common.section")} 01</div>
             </div>
             <CardContent className="p-10 grid md:grid-cols-2 gap-8 bg-white rounded-b-[2.5rem]">
               <div className="space-y-4">
-                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Aadhaar Card Number</label>
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t("profile.aadhaar_label")}</label>
                 <InputGroup className="h-14 rounded-2xl border-slate-200 bg-slate-50 focus-within:bg-white transition-colors">
                   <InputGroupInput 
                     name="aadhaar"
@@ -164,7 +167,7 @@ export default function CompleteProfile() {
                 </InputGroup>
               </div>
               <div className="space-y-4">
-                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">7/12 land Record ID</label>
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t("profile.land_record_label")}</label>
                 <InputGroup className="h-14 rounded-2xl border-slate-200 bg-slate-50 focus-within:bg-white transition-colors">
                   <InputGroupInput 
                     name="landRecordId"
@@ -176,7 +179,7 @@ export default function CompleteProfile() {
                 </InputGroup>
               </div>
               <div className="space-y-4">
-                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Survey Number</label>
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t("profile.survey_number")}</label>
                 <InputGroup className="h-14 rounded-2xl border-slate-200 bg-slate-50 focus-within:bg-white transition-colors">
                   <InputGroupInput 
                     name="surveyNumber"
@@ -188,7 +191,7 @@ export default function CompleteProfile() {
                 </InputGroup>
               </div>
               <div className="space-y-4">
-                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Plot Number</label>
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t("profile.plot_number")}</label>
                 <InputGroup className="h-14 rounded-2xl border-slate-200 bg-slate-50 focus-within:bg-white transition-colors">
                   <InputGroupInput 
                     name="plotNumber"
@@ -210,11 +213,11 @@ export default function CompleteProfile() {
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-black text-lg">Regional Placement</h3>
-                  <p className="text-slate-400 text-xs font-medium">Specify your primary irrigation zone</p>
+                  <h3 className="font-black text-lg">{t("profile.regional_placement")}</h3>
+                  <p className="text-slate-400 text-xs font-medium">{t("profile.irrigation_zone")}</p>
                 </div>
               </div>
-              <div className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Section 02</div>
+              <div className="text-slate-500 text-[10px] font-black uppercase tracking-widest">{t("common.section")} 02</div>
             </div>
             <CardContent className="p-10 grid md:grid-cols-2 gap-8 bg-white rounded-b-[2.5rem]">
               <div className="space-y-4">
@@ -275,7 +278,7 @@ export default function CompleteProfile() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-4 pb-12">
             <div className="flex items-center gap-3 text-slate-400 text-xs font-medium max-w-md">
               <ShieldCheck className="w-5 h-5 shrink-0" />
-              Your data is encrypted and synced directly with the Ministry of Agriculture databases for instant verification.
+              {t("profile.encrypted_sync")}
             </div>
             <Button 
               onClick={handleSubmit}
@@ -286,9 +289,9 @@ export default function CompleteProfile() {
               }`}
               disabled={!isFormValid || loading}
             >
-              {loading ? "Verifying Credentials..." : (
+              {loading ? t("signup.creating") : (
                 <span className="flex items-center gap-3">
-                  Submit for Verification
+                  {t("profile.submit_verification")}
                   <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                 </span>
               )}

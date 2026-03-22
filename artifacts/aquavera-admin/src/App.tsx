@@ -13,6 +13,7 @@ import UserManagement from "@/pages/user-management";
 import ActivityLogs from "@/pages/activity-logs";
 import Settings from "@/pages/settings";
 import RegisteredFarmers from "@/pages/registered-farmers";
+import SurveyMap from "@/pages/survey-map";
 import NotFound from "@/pages/not-found";
 
 import Login from "@/pages/auth/login";
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/requests/new" component={NewRequest} />
       <Route path="/requests/:id" component={RequestDetail} />
       <Route path="/farmers" component={RegisteredFarmers} />
+      <Route path="/survey-map" component={SurveyMap} />
       <Route path="/users" component={UserManagement} />
       <Route path="/logs" component={ActivityLogs} />
       <Route path="/settings" component={Settings} />

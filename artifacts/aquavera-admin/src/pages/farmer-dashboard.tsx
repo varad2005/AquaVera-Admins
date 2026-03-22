@@ -60,7 +60,7 @@ export default function FarmerDashboard() {
   // Dynamic calculations from real data
   const totalBill = farmerRequests.reduce((acc: number, req: WaterRequest) => acc + (req.status === 'Approved' ? req.calculatedBilling : 0), 0);
   const landInfo = `${user.plotNumber || "Plot #42"}, ${user.city || "Nashik"}`;
-  const landArea = user.surveyNumber ? "5.5 Acres" : "Region Not Set"; // Fallback if no survey
+  const landArea = user.surveyNumber ? `5.5 ${t("unit.acre")}s` : t("dashboard.not_recorded"); 
 
   return (
     <AppLayout>
@@ -69,9 +69,9 @@ export default function FarmerDashboard() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none">
-              Hello, <span className="text-emerald-600">{user.name}</span>
+              {t("dashboard.hello")}, <span className="text-emerald-600">{user.name}</span>
             </h1>
-            <p className="text-slate-500 font-medium tracking-tight">Here’s your farm status for today</p>
+            <p className="text-slate-500 font-medium tracking-tight">{t("dashboard.status_today")}</p>
           </div>
           <div className="flex items-center gap-3 text-slate-400 text-sm font-medium">
             <Clock className="w-4 h-4" />
@@ -88,19 +88,19 @@ export default function FarmerDashboard() {
             <CardContent className="relative p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="space-y-4 text-center md:text-left">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 text-white rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20">
-                  <Droplets className="w-3.5 h-3.5" /> Start Irrigation
+                  <Droplets className="w-3.5 h-3.5" /> {t("dashboard.start_irrigation")}
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-3xl md:text-4xl font-black text-white leading-tight">Request Water</h2>
+                  <h2 className="text-3xl md:text-4xl font-black text-white leading-tight">{t("dashboard.request_water")}</h2>
                   <p className="text-emerald-50 font-medium text-lg max-w-md opacity-80">
-                    Instantly trigger a new irrigation sequence for your crop and sync with the smart grid.
+                    {t("dashboard.request_water_desc")}
                   </p>
                 </div>
               </div>
               
               <div className="bg-white p-2 rounded-[2.2rem] shadow-xl">
                 <Button className="h-20 px-10 text-xl font-black rounded-[1.8rem] bg-slate-900 hover:bg-emerald-600 text-white transition-all duration-500 gap-4">
-                  Schedule Now <PlusCircle className="w-6 h-6" />
+                  {t("dashboard.schedule_now")} <PlusCircle className="w-6 h-6" />
                 </Button>
               </div>
             </CardContent>
@@ -113,10 +113,10 @@ export default function FarmerDashboard() {
             
             {/* Overview Stats */}
             <div className="space-y-4">
-              <SectionHeader title="Farm Overview" subtitle="Real-time status tracking" />
+              <SectionHeader title={t("dashboard.farm_overview")} subtitle={t("dashboard.real_time")} />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <StatCard 
-                title="Active Request" 
+                title={t("dashboard.active_request")} 
                 value={activeRequest ? activeRequest.status : "None"} 
                 icon={Activity} 
                 className={cn(
@@ -125,19 +125,19 @@ export default function FarmerDashboard() {
                 )}
               />
               <StatCard 
-                title="Last Crop" 
-                value={farmerRequests.length > 0 ? farmerRequests[0].cropType : "Not Recorded"} 
+                title={t("dashboard.last_crop")} 
+                value={farmerRequests.length > 0 ? farmerRequests[0].cropType : t("dashboard.not_recorded")} 
                 icon={Leaf} 
                 className="rounded-3xl border-none shadow-sm bg-white"
               />
               <StatCard 
-                title="Total Billing" 
+                title={t("dashboard.total_billing")} 
                 value={formatCurrency(totalBill)} 
                 icon={CreditCard} 
                 className="rounded-3xl border-none shadow-sm bg-white"
               />
               <StatCard 
-                title="Land Summary" 
+                title={t("land.title")} 
                 value={landArea} 
                 icon={Landmark} 
                 className="rounded-3xl border-none shadow-sm bg-white"
@@ -148,11 +148,11 @@ export default function FarmerDashboard() {
             {/* Recent Requests List */}
             <section className="space-y-4">
               <div className="flex items-center justify-between">
-                <SectionHeader title="Recent Activity" />
+                <SectionHeader title={t("dashboard.recent_activity")} />
                 {farmerRequests.length > 0 && (
                   <Link href="/request-activity">
                     <Button variant="ghost" className="text-xs font-black text-emerald-600 uppercase tracking-widest hover:bg-emerald-50">
-                      View All <ArrowRight className="w-3 h-3 ml-2" />
+                      {t("dashboard.view_all")} <ArrowRight className="w-3 h-3 ml-2" />
                     </Button>
                   </Link>
                 )}
@@ -164,13 +164,13 @@ export default function FarmerDashboard() {
                     <ClipboardList className="w-10 h-10" />
                   </div>
                   <div className="space-y-2">
-                    <h4 className="text-xl font-black text-slate-800 tracking-tight">No water requests yet</h4>
+                    <h4 className="text-xl font-black text-slate-800 tracking-tight">{t("dashboard.no_requests")}</h4>
                     <p className="text-slate-400 font-medium text-sm max-w-xs">
-                      Your irrigation history is currently empty. Start by requesting water for your crop.
+                      {t("dashboard.no_requests_desc")}
                     </p>
                   </div>
                   <Button className="rounded-2xl bg-slate-900 hover:bg-emerald-600 px-8 font-bold gap-2">
-                    Request Water <PlusCircle className="w-4 h-4" />
+                    {t("dashboard.request_water")} <PlusCircle className="w-4 h-4" />
                   </Button>
                 </div>
               ) : (
@@ -192,7 +192,7 @@ export default function FarmerDashboard() {
                             </span>
                           </div>
                           <p className="text-[11px] text-slate-400 font-medium">
-                            {format(new Date(req.timestamp), 'MMM dd')} • {req.durationHours} Hours • {req.village}
+                            {format(new Date(req.timestamp), 'MMM dd')} • {req.durationHours} {t("unit.hours")} • {req.village}
                           </p>
                         </div>
                       </div>
@@ -214,24 +214,24 @@ export default function FarmerDashboard() {
           <div className="space-y-8">
             {/* Insights Section */}
             <div className="space-y-4">
-              <SectionHeader title="Farm Insights" subtitle="Data-driven suggestions" />
+              <SectionHeader title={t("dashboard.farm_insights")} subtitle={t("dashboard.data_driven")} />
               <div className="space-y-6">
-                <InsightItem icon={TrendingUp} label="Best Current Crop" value="Sugarcane" />
-                <InsightItem icon={Clock} label="Next Irrigation" value="In 3 Days" />
-                <InsightItem icon={Droplets} label="Water Usage" value="Moderate" />
+                <InsightItem icon={Droplets} label={t("dashboard.next_irrigation")} value="Tomorrow, 06:00 AM" />
+                <InsightItem icon={Droplets} label={t("dashboard.water_usage")} value="1,240 m³" />
+                <InsightItem icon={Activity} label={t("activity.status")} value="Optimal" />
               </div>
             </div>
 
             {/* Land Summary Quick View */}
             <div className="p-6 rounded-3xl bg-slate-900 text-white space-y-6">
               <div className="space-y-2">
-                <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Active Land Profile</p>
+                <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{t("dashboard.active_land")}</p>
                 <h4 className="text-2xl font-black tracking-tight">{landInfo}</h4>
-                <p className="text-slate-400 text-xs font-medium">Synced with Govt. Survey Grid</p>
+                <p className="text-slate-400 text-xs font-medium">{t("dashboard.govt_survey")}</p>
               </div>
               <div className="pt-6 border-t border-white/10 flex items-center justify-between">
                 <div className="text-center">
-                  <p className="text-[9px] font-black uppercase text-slate-500 mb-1">Plot</p>
+                  <p className="text-[9px] font-black uppercase text-slate-500 mb-1">{t("land.plot")}</p>
                   <p className="font-bold text-sm">#42A</p>
                 </div>
                 <div className="text-center border-l border-white/10 pl-6">

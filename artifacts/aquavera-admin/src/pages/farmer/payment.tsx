@@ -12,10 +12,12 @@ import {
 } from 'lucide-react';
 import { useLocation, Link } from "wouter";
 import { useRole } from "@/context/role-context";
+import { useLanguage } from "@/context/language-context";
 
 export default function PaymentPage() {
   const { user } = useRole();
   const [location, setLocation] = useLocation();
+  const { t } = useLanguage();
   if (!user) return null;
   const [step, setStep] = useState('selection'); // selection, processing, success
   const [method, setMethod] = useState('card');
@@ -96,16 +98,16 @@ export default function PaymentPage() {
           <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 size={48} />
           </div>
-          <h2 className="text-2xl font-black text-slate-800 mb-2">Payment Successful!</h2>
-          <p className="text-slate-500 font-medium mb-8 text-sm">Your transaction was completed successfully. A digital receipt has been generated.</p>
+          <h2 className="text-2xl font-black text-slate-800 mb-2">{t("payment.success")}</h2>
+          <p className="text-slate-500 font-medium mb-8 text-sm">{t("payment.receipt_desc")}</p>
           
           <div className="bg-slate-50 rounded-2xl p-5 mb-8 text-left space-y-3 border border-slate-100">
             <div className="flex justify-between text-[11px] uppercase tracking-wider font-black text-slate-400">
-              <span>Transaction ID</span>
+              <span>{t("payment.transaction_id")}</span>
               <span className="font-mono">{Math.random().toString(36).substr(2, 10).toUpperCase()}</span>
             </div>
             <div className="flex justify-between items-center pt-2 border-t border-slate-200/50">
-              <span className="text-sm font-bold text-slate-500">Amount Paid</span>
+              <span className="text-sm font-bold text-slate-500">{t("payment.amount_paid")}</span>
               <span className="text-lg font-black text-slate-900">₹{orderDetails.amount.toLocaleString('en-IN')}</span>
             </div>
           </div>
@@ -114,7 +116,7 @@ export default function PaymentPage() {
             onClick={resetGateway}
             className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black shadow-xl shadow-slate-900/20 hover:bg-emerald-600 transition-all active:scale-95"
           >
-            Return to Dashboard
+            {t("payment.return")}
           </button>
         </div>
       </div>
@@ -142,12 +144,12 @@ export default function PaymentPage() {
 
             <div className="space-y-8">
               <div>
-                <p className="text-slate-400 text-[10px] uppercase tracking-[0.2em] font-black mb-2">Total Amount Due</p>
+                <p className="text-slate-400 text-[10px] uppercase tracking-[0.2em] font-black mb-2">{t("payment.amount_paid")} (Total)</p>
                 <h1 className="text-5xl font-black tracking-tighter">₹{orderDetails.amount.toLocaleString('en-IN')}</h1>
               </div>
 
               <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 border border-white/10">
-                <p className="text-emerald-400 text-[10px] uppercase font-black tracking-widest mb-4 pb-2 border-b border-white/10">Order Summary</p>
+                <p className="text-emerald-400 text-[10px] uppercase font-black tracking-widest mb-4 pb-2 border-b border-white/10">{t("billing.bill_amount")}</p>
                 <div className="space-y-4">
                   {orderDetails.items.map(item => (
                     <div key={item.id} className="flex justify-between items-center text-sm">
@@ -156,7 +158,7 @@ export default function PaymentPage() {
                     </div>
                   ))}
                   <div className="pt-2 flex justify-between text-[10px] text-slate-500 font-black tracking-widest uppercase">
-                    <span>Reference</span>
+                    <span>{t("payment.transaction_id")}</span>
                     <span className="font-mono">{orderDetails.orderId}</span>
                   </div>
                 </div>
@@ -166,7 +168,7 @@ export default function PaymentPage() {
 
           <div className="relative z-10 mt-12 flex items-center gap-3 text-slate-400 text-[10px] font-black uppercase tracking-widest bg-white/5 p-4 rounded-2xl border border-white/5">
             <Lock size={14} className="text-emerald-500" />
-            <p>Secure 256-Bit SSL Encryption</p>
+            <p>{t("payment.secure_ssl")}</p>
           </div>
           
           {/* Background Decorative Elements */}
@@ -177,7 +179,7 @@ export default function PaymentPage() {
         {/* Right Section: Payment Methods */}
         <div className="w-full lg:w-3/5 p-8 lg:p-12 bg-white">
           <div className="flex items-center justify-between mb-10">
-            <h2 className="text-2xl font-black text-slate-800 tracking-tight">Select Method</h2>
+            <h2 className="text-2xl font-black text-slate-800 tracking-tight">{t("payment.title")}</h2>
             <div className="flex gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
               <div className="w-2.5 h-2.5 rounded-full bg-slate-100"></div>
@@ -210,7 +212,7 @@ export default function PaymentPage() {
               {method === 'card' && (
                 <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-300">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Card Number</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">{t("payment.card_no")}</label>
                     <div className="relative">
                       <input 
                         name="cardNumber"
@@ -226,7 +228,7 @@ export default function PaymentPage() {
                   </div>
                   <div className="flex gap-4">
                     <div className="w-1/2 space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Expiry Date</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">{t("payment.expiry")}</label>
                       <input 
                         name="expiry"
                         value={formData.expiry}
@@ -238,7 +240,7 @@ export default function PaymentPage() {
                       />
                     </div>
                     <div className="w-1/2 space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">CVV</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">{t("payment.cvv")}</label>
                       <div className="relative">
                         <input 
                           name="cvv"
@@ -274,7 +276,7 @@ export default function PaymentPage() {
                   </div>
                   <p className="mt-3 text-[11px] text-slate-400 font-medium flex gap-2 items-center bg-slate-50 p-3 rounded-xl">
                     <Info size={14} className="text-emerald-500" />
-                    Secure payment request will be sent to your UPI app.
+                    {t("payment.secure_ssl")}
                   </p>
                 </div>
               )}
@@ -296,7 +298,7 @@ export default function PaymentPage() {
                           <span className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-[9px] font-black text-slate-500 uppercase tracking-widest shadow-sm">GPay</span>
                           <span className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-[9px] font-black text-slate-500 uppercase tracking-widest shadow-sm">Bhim</span>
                         </div>
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Scan to Pay <span className="text-slate-900">₹{orderDetails.amount.toLocaleString('en-IN')}</span></p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t("payment.scan_pay")} <span className="text-slate-900">₹{orderDetails.amount.toLocaleString('en-IN')}</span></p>
                       </div>
                     </div>
                   ) : (
@@ -304,7 +306,7 @@ export default function PaymentPage() {
                       <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto text-slate-400 shadow-sm">
                         <QrCode size={32} />
                       </div>
-                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest leading-relaxed max-w-[200px]">Generate a unique dynamic QR for this transaction</p>
+                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest leading-relaxed max-w-[200px]">{t("payment.dynamic_qr")}</p>
                     </div>
                   )}
                 </div>
@@ -323,7 +325,7 @@ export default function PaymentPage() {
                   ) : (
                     <>
                       <span className="text-lg uppercase tracking-tight">
-                        {method === 'qr' && !qrValue ? 'Generate Payment QR' : `Confirm Payment`}
+                        {method === 'qr' && !qrValue ? t("payment.generate_qr") : t("payment.confirm")}
                       </span>
                       <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
                     </>
