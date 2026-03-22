@@ -34,8 +34,13 @@ app.use("/api", router);
 
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
-  const publicPath = path.resolve(import.meta.dirname, "public");
-  app.use(express.static(publicPath));
+  // In unified deployment, we are run from the root, and assets 
+  // are in artifacts/api-server/dist/public
+  const publicPath = path.resolve(process.cwd(), "artifacts/api-server/dist/public");
+  
+  if (express.static(publicPath)) {
+    app.use(express.static(publicPath));
+  }
 
   // Catch-all for SPA routing
   app.get("*", (req, res, next) => {
