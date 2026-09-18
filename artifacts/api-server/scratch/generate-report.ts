@@ -2,7 +2,7 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 import { db, waterRequests, users } from "../../../lib/db/src/index.ts";
-import { isNull, eq } from "drizzle-orm";
+import { isNull, eq } from "@workspace/db";
 import fs from "fs";
 
 function maskAadhaar(aadhaar: string | null): string {

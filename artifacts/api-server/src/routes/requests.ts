@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, waterRequests, bills, auditLogs, type InsertRequest } from "@workspace/db";
-import { eq, sql, count } from "drizzle-orm";
+import { eq, sql, count } from "@workspace/db";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { z } from "zod";
 

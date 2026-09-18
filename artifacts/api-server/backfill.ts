@@ -13,7 +13,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 import { db, waterRequests, users } from "@workspace/db";
-import { isNull, eq } from "drizzle-orm";
+import { isNull, eq } from "@workspace/db";
 
 async function main() {
   console.log("=== Phase 1 User ID Backfill ===\n");

@@ -1,5 +1,5 @@
 import { db, waterRequests, users } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { eq } from "@workspace/db";
 
 async function main() {
   const allUsers = await db.select().from(users);

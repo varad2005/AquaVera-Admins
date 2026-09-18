@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 import { db, users } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { eq } from "@workspace/db";
 
 async function main() {
   const admin = await db.select().from(users).where(eq(users.role, "Admin")).limit(1);

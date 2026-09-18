@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, users, auditLogs } from "@workspace/db";
-import { eq, count } from "drizzle-orm";
+import { eq, count } from "@workspace/db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { requireAuth, requireRole } from "../middlewares/auth";

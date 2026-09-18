@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, users, waterRequests } from "@workspace/db";
-import { eq, count } from "drizzle-orm";
+import { eq, count } from "@workspace/db";
 import { logger } from "../lib/logger";
 import { requireAuth, requireRole } from "../middlewares/auth";
 

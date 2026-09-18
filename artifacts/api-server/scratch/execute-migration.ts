@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 import { db, waterRequests, users } from "../../../lib/db/src/index.ts";
-import { isNull, isNotNull, eq, and } from "drizzle-orm";
+import { isNull, isNotNull, eq, and } from "@workspace/db";
 
 function normalize(s: string | null): string {
   return (s || "").trim().toLowerCase();
