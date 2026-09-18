@@ -103,6 +103,9 @@ export default function SurveyMap() {
     setClickedPlaceName("Identifying...");
     setIsReverseLoading(true);
     try {
+      if (!BHUVAN_REVERSE_API_KEY) {
+        throw new Error("Missing Bhuvan API Key");
+      }
       // Bhuvan Reverse Geocoding API
       const response = await fetch(`https://bhuvan.nrsc.gov.in/api/geonames/reverse_geonames_search.php?token=${BHUVAN_REVERSE_API_KEY}&lat=${lat}&lon=${lon}`);
       const data = await response.json();
@@ -115,8 +118,23 @@ export default function SurveyMap() {
         setClickedPlaceName("No information found");
       }
     } catch (error) {
-       console.error("Reverse Geocoding failed:", error);
-       setClickedPlaceName("Identification Failed");
+      console.warn("Bhuvan API failed or missing. Falling back to OpenStreetMap...", error);
+      try {
+        // Fallback to free OpenStreetMap Nominatim API
+        const osmResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+        const osmData = await osmResponse.json();
+        
+        if (osmData && osmData.display_name) {
+          // Keep it short by taking the first 2-3 parts of the address
+          const parts = osmData.display_name.split(',').slice(0, 3).join(',');
+          setClickedPlaceName(parts || "Unnamed Area");
+        } else {
+          setClickedPlaceName("No information found");
+        }
+      } catch (fallbackError) {
+        console.error("Reverse Geocoding failed:", fallbackError);
+        setClickedPlaceName("Identification Failed");
+      }
     } finally {
       setIsReverseLoading(false);
     }

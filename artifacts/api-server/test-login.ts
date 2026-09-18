@@ -2,7 +2,7 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
-import { db, users } from "../lib/db/src/index.js";
+import { db, users } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 

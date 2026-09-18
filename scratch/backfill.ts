@@ -1,7 +1,7 @@
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
-import { db, waterRequests, users } from "./lib/db/src/index.ts";
+import { db, waterRequests, users } from "@workspace/db";
 import { isNull, eq } from "drizzle-orm";
 
 async function main() {

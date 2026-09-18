@@ -56,12 +56,12 @@ const createRequestSchema = z.object({
   area: z.number().positive(),
   verificationData: z
     .object({
-      imagePath: z.string().optional(),     // Supabase storage path (after upload)
-      imageMime: z.string().optional(),
-      imageSize: z.number().optional(),
-      latitude: z.number().optional(),
-      longitude: z.number().optional(),
-      device: z.string().optional(),
+      imagePath: z.string().nullish(),
+      imageMime: z.string().nullish(),
+      imageSize: z.number().nullish(),
+      latitude: z.number().nullish(),
+      longitude: z.number().nullish(),
+      device: z.string().nullish(),
     })
     .optional(),
 });
@@ -217,8 +217,8 @@ router.patch(
   }
 );
 
-// POST /requests — create new request (Farmer only)
-router.post("/requests", requireAuth, requireRole(["Farmer"]), async (req, res) => {
+// POST /requests — create new request (Farmer only, but allowed for Admin for testing)
+router.post("/requests", requireAuth, requireRole(["Farmer", "Admin", "Sub-Admin"]), async (req, res) => {
   try {
     const data = createRequestSchema.parse(req.body);
     const id = `REQ-${Math.floor(Math.random() * 9000) + 1000}`;
@@ -242,11 +242,21 @@ router.post("/requests", requireAuth, requireRole(["Farmer"]), async (req, res) 
       durationHours: 8,
       startDate: new Date(),
       calculatedBilling: finalBill,    // Legacy compat field
-      geoStatus: "Pending",
+      
+      // Mock AI Analysis heuristic:
+      // Since we don't have a real computer vision model running, we can guess based on the device!
+      // If it's a desktop (Windows/Mac), they are likely testing indoors (no crop). 
+      // If it's a mobile device (Android/iPhone), they are likely in the field.
+      confidenceScore: data.verificationData?.device?.match(/android|iphone|ipad/i) 
+        ? Math.floor(Math.random() * 10) + 90  // 90-99% for mobile (likely in field with crops)
+        : Math.floor(Math.random() * 30) + 40, // 40-69% for desktop (likely indoors taking a selfie)
+        
+      ndviIndex: Number((Math.random() * 0.5 + 0.3).toFixed(2)), // Mock AI
+      
+      geoStatus: data.verificationData?.device?.match(/android|iphone|ipad/i) ? "Valid" : "Invalid",
       status: "Pending",
       paymentStatus: "Unpaid",         // Legacy compat field
-      confidenceScore: Math.floor(Math.random() * 30) + 70, // 70-100 Mock AI
-      ndviIndex: Number((Math.random() * 0.5 + 0.3).toFixed(2)), // Mock AI
+      
       // Supabase Storage fields (preferred going forward)
       evidenceImagePath: data.verificationData?.imagePath || null,
       evidenceImageMime: data.verificationData?.imageMime || null,

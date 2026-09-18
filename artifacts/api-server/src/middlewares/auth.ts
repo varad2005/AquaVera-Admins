@@ -27,7 +27,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): un
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as AuthUser;
     req.user = decoded;
-    next();
+    return next();
   } catch (error) {
     return res.status(401).json({ error: "Invalid or expired token" });
   }
@@ -41,6 +41,6 @@ export function requireRole(allowedRoles: string[]) {
     if (!allowedRoles.includes(req.user.role)) {
       return res.status(403).json({ error: "Forbidden: insufficient permissions" });
     }
-    next();
+    return next();
   };
 }

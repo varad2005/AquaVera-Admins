@@ -1,8 +1,8 @@
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
-import { db, waterRequests } from "./lib/db/src/index.ts";
-import { eq, count } from "drizzle-orm";
+import { db, waterRequests, users } from "@workspace/db";
+import { isNull, eq, count } from "drizzle-orm";
 async function main() {
   try {
     const limit = 20;

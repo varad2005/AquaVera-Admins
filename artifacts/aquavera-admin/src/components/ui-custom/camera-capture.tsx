@@ -39,16 +39,19 @@ export function CameraCapture({ onCapture, onClear, className }: CameraCapturePr
     if (isCapturing && !capturedData) {
       const initCamera = async () => {
         try {
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error("Camera access requires a secure connection (HTTPS or localhost).");
+          }
           const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: "environment" }, 
+            video: true, 
             audio: false 
           });
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
             streamRef.current = stream;
           }
-        } catch (err) {
-          setError("Please allow camera access to continue.");
+        } catch (err: any) {
+          setError(err.message || "Please allow camera access to continue.");
           setIsCapturing(false);
           console.error("Camera error:", err);
         }
@@ -91,8 +94,8 @@ export function CameraCapture({ onCapture, onClear, className }: CameraCapturePr
       try {
         const position = await new Promise<GeolocationPosition>((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 5000,
+            enableHighAccuracy: false, // Desktop PCs often fail if this is true without a GPS chip
+            timeout: 10000,            // Give it more time to resolve via IP/Wi-Fi
             maximumAge: 0
           });
         });

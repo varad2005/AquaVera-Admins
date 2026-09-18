@@ -5,6 +5,7 @@ export type GeoStatus = 'Valid' | 'Invalid' | 'Pending';
 
 export interface WaterRequest {
   id: string;
+  userId: string;
   farmerName: string;
   aadhaar: string;
   landId: string;
@@ -21,6 +22,7 @@ export interface WaterRequest {
   ndviIndex: number;
   assignedTo?: string;
   evidenceImage?: string;
+  evidenceImagePath?: string;
   latitude?: number;
   longitude?: number;
   deviceInfo?: string;

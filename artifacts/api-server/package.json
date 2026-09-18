@@ -11,6 +11,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
     "@types/multer": "^2.2.0",
+    "@types/pg": "^8.23.1",
     "@workspace/api-zod": "workspace:*",
     "@workspace/db": "workspace:*",
     "bcryptjs": "^2.4.3",
@@ -21,6 +22,7 @@
     "express-rate-limit": "^8.7.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.3.0",
+    "pg": "^8.23.0",
     "pino": "^9",
     "pino-http": "^10",
     "zod": "^3.23.8"

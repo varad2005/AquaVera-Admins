@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, Link } from "wouter";
-import { useAddRequest } from "@/hooks/use-mock-api";
+import { useAddRequest, useUploadEvidence } from "@/hooks/use-mock-api";
 import { formatCurrency, cn } from "@/lib/utils";
 import { CameraCapture } from "@/components/ui-custom/camera-capture";
 import { useLanguage } from "@/context/language-context";
@@ -59,6 +59,7 @@ export default function NewRequest() {
   const { t } = useLanguage();
   const [, setLocation] = useLocation();
   const addRequest = useAddRequest();
+  const uploadEvidence = useUploadEvidence();
   const [loading, setLoading] = useState(false);
 
   // Form State
@@ -97,22 +98,42 @@ export default function NewRequest() {
     setLoading(true);
     
     try {
+      // 1. Convert base64 to File
+      const res = await fetch(formData.verificationData.image);
+      const blob = await res.blob();
+      const file = new File([blob], `capture-${Date.now()}.jpg`, { type: "image/jpeg" });
+
+      // 2. Upload the file
+      const uploadRes = await uploadEvidence.mutateAsync({
+        file,
+        requestId: "new"
+      });
+
+      // 3. Submit request with the returned storage path
       await addRequest.mutateAsync({
-        farmerName: user.name,
-        aadhaar: user.aadhaar,
-        landId: user.landRecordId,
-        village: user.city,
-        district: user.taluka,
+        farmerName: user.name || "Test User",
+        aadhaar: (user as any).aadhaar || "000000000000",
+        landId: (user as any).landRecordId || "TEST-LAND-123",
+        village: (user as any).city || "Test Village",
+        district: (user as any).taluka || "Test District",
         category: formData.category,
         crop: formData.crop,
         season: formData.season,
         area: billingInfo.areaInHa,
-        verificationData: formData.verificationData
+        verificationData: {
+          imagePath: uploadRes.path,
+          imageMime: uploadRes.mime,
+          imageSize: uploadRes.size,
+          latitude: formData.verificationData.latitude,
+          longitude: formData.verificationData.longitude,
+          device: formData.verificationData.device
+        }
       });
 
       toast({ title: t("login.success_title"), description: t("request.processing") });
       setLocation("/dashboard/farmer");
-    } catch (error) {
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Failed to submit request", variant: "destructive" });
     } finally {
       setLoading(false);
     }

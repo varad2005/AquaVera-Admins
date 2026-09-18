@@ -102,7 +102,7 @@ export default function RequestDetail() {
             <div className="p-6 grid grid-cols-2 gap-y-6 gap-x-8">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">{t("detail.declared_crop")}</p>
-                <p className="font-medium text-foreground">{t(`crop.${request.cropType.toLowerCase()}`)}</p>
+                <p className="font-medium text-foreground">{request.cropType}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">{t("detail.duration")}</p>
@@ -202,9 +202,9 @@ export default function RequestDetail() {
                 </>
               ) : (
                 <div className="h-full flex items-center justify-center bg-slate-800 relative min-h-[400px]">
-                   {request.evidenceImage ? (
+                   {request.evidenceImagePath || request.evidenceImage ? (
                      <img 
-                       src={request.evidenceImage} 
+                       src={request.evidenceImagePath || request.evidenceImage} 
                        alt="Field Evidence" 
                        className="w-full h-full object-contain" 
                      />

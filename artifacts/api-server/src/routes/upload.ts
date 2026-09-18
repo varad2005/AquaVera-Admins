@@ -30,14 +30,22 @@ router.post(
   requireAuth,
   upload.single("file"),
   async (req, res) => {
-    if (!supabaseUrl || !supabaseServiceKey) {
-      return res.status(501).json({
-        error: "File storage not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-      });
-    }
-
     if (!req.file) {
       return res.status(400).json({ error: "No file provided" });
+    }
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      // Fallback for local testing if Supabase isn't configured
+      console.warn("Supabase not configured. Falling back to base64 data URL.");
+      const base64Data = req.file.buffer.toString("base64");
+      const dataUrl = `data:${req.file.mimetype};base64,${base64Data}`;
+      
+      return res.status(201).json({
+        path: dataUrl,
+        mime: req.file.mimetype,
+        size: req.file.size,
+        originalName: req.file.originalname,
+      });
     }
 
     const requestId = z.string().min(1).safeParse(req.body.requestId);
