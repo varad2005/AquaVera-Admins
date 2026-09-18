@@ -90,7 +90,14 @@ export function Sidebar() {
 
       <div className="mt-auto p-4 border-t border-sidebar-border/50">
         <button 
-          onClick={() => window.location.assign('/')}
+          onClick={async () => {
+            try {
+              await fetch('/api/logout', { method: 'POST' });
+            } catch (e) {}
+            // Also remove legacy localStorage if it still exists
+            localStorage.removeItem('user');
+            window.location.assign('/auth/login');
+          }}
           className="flex items-center gap-3 px-3 py-2.5 w-full text-left rounded-md text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-border/50 hover:text-white transition-colors"
         >
           <LogOut className="w-4 h-4" />

@@ -32,6 +32,7 @@ export default function Login() {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
@@ -39,7 +40,6 @@ export default function Login() {
         const user = await response.json();
         setRole(user.role);
         setUser(user);
-        localStorage.setItem("user", JSON.stringify(user));
 
         // Show success toast with user's name
         let welcomeMsg = "";

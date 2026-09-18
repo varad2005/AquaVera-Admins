@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
+import { useRole } from "@/context/role-context";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
@@ -54,6 +55,7 @@ export default function CompleteProfile() {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const { user, setUser } = useRole();
   const [loading, setLoading] = useState(false);
 
   // Form State
@@ -87,19 +89,18 @@ export default function CompleteProfile() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const userStr = localStorage.getItem("user");
-      if (!userStr) throw new Error("User session not found");
-      const user = JSON.parse(userStr);
+      if (!user) throw new Error("User session not found");
 
       const response = await fetch(`${API_BASE_URL}/users/profile/${user.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         const updatedUser = await response.json();
-        localStorage.setItem("user", JSON.stringify(updatedUser)); 
+        setUser(updatedUser); 
         toast({ 
           title: t("signup.success_title"), 
           description: t("signup.success_desc").replace("{name}", user.name)

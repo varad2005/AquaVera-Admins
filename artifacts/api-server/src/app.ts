@@ -1,6 +1,7 @@
 import path from "path";
 import express, { type Express } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
@@ -26,16 +27,27 @@ app.use(
     },
   }),
 );
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// CORS: Allow same-origin and dev Vite proxy; in production use explicit origin
+const allowedOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
+app.use(
+  cors({
+    origin: process.env.NODE_ENV === "production" ? allowedOrigin : true,
+    credentials: true, // Required to allow cookies to be sent with requests
+  }),
+);
+
+// Cookie parser MUST be registered before any route that reads req.cookies
+app.use(cookieParser());
+
+// Body limits prevent oversized payloads (e.g. base64 image attacks)
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use("/api", router);
 
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
-  // In unified deployment, we are run from the root, and assets 
-  // are in artifacts/api-server/dist/public
   const publicPath = path.resolve(process.cwd(), "artifacts/api-server/dist/public");
   
   if (express.static(publicPath)) {

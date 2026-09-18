@@ -47,6 +47,7 @@ export default function SignUp() {
       const response = await fetch(`${API_BASE_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -54,7 +55,6 @@ export default function SignUp() {
         const user = await response.json();
         setRole(user.role);
         setUser(user);
-        localStorage.setItem("user", JSON.stringify(user));
 
         toast({ 
           title: "Account Created!", 

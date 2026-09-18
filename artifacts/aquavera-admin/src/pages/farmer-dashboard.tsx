@@ -53,7 +53,7 @@ export default function FarmerDashboard() {
   const { data: allRequests, isLoading } = useRequests();
 
   // Filter requests for this farmer
-  const farmerRequests = allRequests?.filter((r: WaterRequest) => r.farmerName === user.name) || [];
+  const farmerRequests = allRequests?.filter((r: WaterRequest) => r.userId === user.id) || [];
   const activeRequest = farmerRequests.find((r: WaterRequest) => r.status === 'Pending' || r.status === 'Approved');
   const recentRequests = farmerRequests.slice(0, 5);
 

@@ -48,8 +48,10 @@ Thumbs.db
 .cache/
 .local/
 
-# Environment variables
+# Environment variables — NEVER commit real credentials
 .env
+.env.local
+.env.*.local
 
 # Redundant lock files
 package-lock.json

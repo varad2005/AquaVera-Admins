@@ -17,7 +17,7 @@ export default function RequestActivity() {
   if (!user) return null;
   const { data: allRequests, isLoading } = useRequests();
 
-  const farmerRequests = allRequests?.filter((r: WaterRequest) => r.farmerName === user.name) || [];
+  const farmerRequests = allRequests?.filter((r: WaterRequest) => r.userId === user.id) || [];
 
   return (
     <AppLayout>

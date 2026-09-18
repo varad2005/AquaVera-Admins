@@ -68,12 +68,14 @@ export default function PaymentPage() {
         const res = await fetch(`${API_BASE_URL}/requests/pay-all`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ farmerName: user.name })
         });
         if (!res.ok) throw new Error('Failed to update bulk payment');
       } else if (requestId) {
         const res = await fetch(`${API_BASE_URL}/requests/${requestId}/pay`, {
           method: 'PATCH',
+          credentials: 'include',
         });
         if (!res.ok) throw new Error('Failed to update payment');
       }

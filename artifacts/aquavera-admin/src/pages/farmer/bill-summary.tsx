@@ -29,7 +29,7 @@ export default function BillSummary() {
   if (!user) return null;
   const { data: allRequests } = useRequests();
 
-  const farmerRequests = allRequests?.filter((r: any) => (r.farmerName === user.name)) || [];
+  const farmerRequests = allRequests?.filter((r: any) => (r.userId === user.id)) || [];
   
   const paymentDone = farmerRequests.reduce((acc: number, req: any) => {
     const status = req.paymentStatus || req.payment_status;

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type Role = 'Admin' | 'Sub-Admin' | 'Farmer';
 
@@ -28,31 +28,42 @@ interface RoleContextType {
   isSubAdmin: boolean;
   user: UserProfile | null;
   setUser: (user: UserProfile | null) => void;
+  isLoading: boolean;
 }
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserProfile | null>(() => {
-    const saved = localStorage.getItem("user");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return null;
-      }
-    }
-    return null;
-  });
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [role, setRole] = useState<Role | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [role, setRole] = useState<Role | null>(user?.role || null);
+  useEffect(() => {
+    // Fetch session on mount
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(res => {
+        if (!res.ok) throw new Error('Unauthorized');
+        return res.json();
+      })
+      .then(data => {
+        setUser(data);
+        setRole(data.role);
+      })
+      .catch(() => {
+        setUser(null);
+        setRole(null);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
   
   const handleSetRole = (newRole: Role) => {
+    // We only update state, but backend is the true source of authority now
     setRole(newRole);
   };
 
-  // Keep role in sync with user.role
-  React.useEffect(() => {
+  useEffect(() => {
     if (user) {
       setRole(user.role);
     } else {
@@ -68,7 +79,8 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       isFarmer: role === 'Farmer',
       isSubAdmin: role === 'Sub-Admin',
       user,
-      setUser
+      setUser,
+      isLoading
     }}>
       {children}
     </RoleContext.Provider>

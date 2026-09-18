@@ -1,113 +1,258 @@
 import { Router, type IRouter } from "express";
-import { db, waterRequests, type InsertRequest } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { db, waterRequests, bills, auditLogs, type InsertRequest } from "@workspace/db";
+import { eq, sql, count } from "drizzle-orm";
+import { requireAuth, requireRole } from "../middlewares/auth";
+import { z } from "zod";
 
 const router: IRouter = Router();
 
-// GET all requests
-router.get("/requests", async (req, res) => {
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function parsePagination(query: Record<string, unknown>) {
+  const page = Math.max(1, Number(query.page) || 1);
+  const limit = Math.min(100, Math.max(1, Number(query.limit) || 20));
+  const offset = (page - 1) * limit;
+  return { page, limit, offset };
+}
+
+async function writeAuditLog(
+  user: string,
+  action: string,
+  ip: string,
+  role: string
+) {
+  await db.insert(auditLogs).values({ user, action, ip, role });
+}
+
+function getIp(req: { ip?: string; socket?: { remoteAddress?: string } }): string {
+  return (req as any).ip || (req as any).socket?.remoteAddress || "unknown";
+}
+
+// ── Rate table (server-side billing) ─────────────────────────────────────────
+
+const RATES: Record<string, Record<string, number>> = {
+  "Food Grains & Other Crops": { kharif: 600, rabi: 1200, hot: 1800 },
+  "Sugarcane & Banana": { kharif: 1890, rabi: 3780, hot: 5670 },
+  Cotton: { kharif: 810, rabi: 1620, hot: 2430 },
+  Horticulture: { kharif: 1422, rabi: 2844, hot: 4266 },
+};
+
+// ── Zod schemas ───────────────────────────────────────────────────────────────
+
+const createRequestSchema = z.object({
+  farmerName: z.string().min(1),
+  aadhaar: z.string().min(1),
+  landId: z.string().min(1),
+  village: z.string().min(1),
+  district: z.string().min(1),
+  category: z.enum([
+    "Food Grains & Other Crops",
+    "Sugarcane & Banana",
+    "Cotton",
+    "Horticulture",
+  ]),
+  crop: z.string().min(1),
+  season: z.enum(["kharif", "rabi", "hot"]),
+  area: z.number().positive(),
+  verificationData: z
+    .object({
+      imagePath: z.string().optional(),     // Supabase storage path (after upload)
+      imageMime: z.string().optional(),
+      imageSize: z.number().optional(),
+      latitude: z.number().optional(),
+      longitude: z.number().optional(),
+      device: z.string().optional(),
+    })
+    .optional(),
+});
+
+const patchStatusSchema = z.object({
+  status: z.enum(["Pending", "Approved", "Rejected", "Flagged"]),
+});
+
+const bulkPaySchema = z.object({
+  farmerName: z.string().min(1),
+});
+
+// ── Routes ────────────────────────────────────────────────────────────────────
+
+// GET /requests — paginated list
+router.get("/requests", requireAuth, async (req, res) => {
   try {
-    const allRequests = await db.select().from(waterRequests);
-    res.json(allRequests);
+    const { page, limit, offset } = parsePagination(req.query as Record<string, unknown>);
+
+    let query = db.select().from(waterRequests).$dynamic();
+    let countQuery = db.select({ count: count() }).from(waterRequests).$dynamic();
+
+    // IDOR protection: farmers only see their own requests
+    if (req.user!.role === "Farmer") {
+      query = query.where(eq(waterRequests.userId, req.user!.id));
+      countQuery = countQuery.where(eq(waterRequests.userId, req.user!.id));
+    }
+
+    const [data, [{ count: total }]] = await Promise.all([
+      query.orderBy(waterRequests.timestamp).limit(limit).offset(offset),
+      countQuery
+    ]);
+
+    return res.json({
+      data,
+      pagination: { page, limit, total: Number(total) },
+    });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch requests" });
+    return res.status(500).json({ error: "Failed to fetch requests" });
   }
 });
 
-// GET singe request
-router.get("/requests/:id", async (req, res) => {
+// GET /requests/:id
+router.get("/requests/:id", requireAuth, async (req, res) => {
   try {
-    const [request] = await db.select().from(waterRequests).where(eq(waterRequests.id, req.params.id));
-    if (!request) {
-      return res.status(404).json({ error: "Request not found" });
+    const [request] = await db
+      .select()
+      .from(waterRequests)
+      .where(eq(waterRequests.id, req.params.id as string));
+
+    if (!request) return res.status(404).json({ error: "Request not found" });
+
+    // IDOR protection
+    if (req.user!.role === "Farmer" && request.userId !== req.user!.id) {
+      return res.status(403).json({ error: "Forbidden: cannot view another farmer's request" });
     }
+
     return res.json(request);
   } catch (error) {
     return res.status(500).json({ error: "Failed to fetch request" });
   }
 });
 
-// POST bulk pay for a farmer
-router.post("/requests/pay-all", async (req, res) => {
-  const { farmerName } = req.body;
-  if (!farmerName) return res.status(400).json({ error: "Farmer name required" });
-  
-  try {
-    const updated = await db.update(waterRequests)
-      .set({ paymentStatus: "Paid" })
-      .where(eq(waterRequests.farmerName, farmerName))
-      .returning();
-    return res.json({ count: updated.length });
-  } catch (error) {
-    return res.status(500).json({ error: "Failed to update bulk payments" });
-  }
-});
+// POST /requests/pay-all — bulk pay for a farmer (Admin only, deprecated legacy path)
+router.post(
+  "/requests/pay-all",
+  requireAuth,
+  requireRole(["Admin", "Sub-Admin"]),
+  async (req, res) => {
+    try {
+      const { farmerName } = bulkPaySchema.parse(req.body);
+      const updated = await db
+        .update(waterRequests)
+        .set({ paymentStatus: "Paid" })
+        .where(eq(waterRequests.farmerName, farmerName))
+        .returning();
 
-// PATCH request payment status
-router.patch("/requests/:id/pay", async (req, res) => {
-  const { id } = req.params;
-  console.log(`Attempting to mark request ${id} as paid...`);
-  try {
-    const updated = await db.update(waterRequests)
-      .set({ paymentStatus: "Paid" })
-      .where(eq(waterRequests.id, id))
-      .returning();
+      await writeAuditLog(
+        req.user!.email,
+        `Bulk pay-all for farmer: ${farmerName} (${updated.length} records)`,
+        getIp(req),
+        req.user!.role
+      );
 
-    if (!updated.length) {
-      console.warn(`Request ${id} not found in database.`);
-      return res.status(404).json({ error: "Request not found" });
+      return res.json({ count: updated.length });
+    } catch (error) {
+      if (error instanceof z.ZodError)
+        return res.status(400).json({ error: "Invalid input", details: error.errors });
+      return res.status(500).json({ error: "Failed to update bulk payments" });
     }
-    console.log(`Request ${id} marked as paid successfully.`);
-    return res.json(updated[0]);
-  } catch (error) {
-    console.error(`Error updating payment for ${id}:`, error);
-    return res.status(500).json({ error: "Failed to update payment status" });
   }
-});
+);
 
-// PATCH request status
-router.patch("/requests/:id", async (req, res) => {
-  try {
-    const { status } = req.body;
-    if (!status) {
-      return res.status(400).json({ error: "Status is required" });
+// PATCH /requests/:id/pay — mark single request paid (Admin only, legacy compat)
+router.patch(
+  "/requests/:id/pay",
+  requireAuth,
+  requireRole(["Admin", "Sub-Admin"]),
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      const updated = await db
+        .update(waterRequests)
+        .set({ paymentStatus: "Paid" })
+        .where(eq(waterRequests.id, id as string))
+        .returning();
+
+      if (!updated.length) return res.status(404).json({ error: "Request not found" });
+
+      await writeAuditLog(
+        req.user!.email,
+        `Marked request ${id} as paid (legacy path)`,
+        getIp(req),
+        req.user!.role
+      );
+
+      return res.json(updated[0]);
+    } catch (error) {
+      return res.status(500).json({ error: "Failed to update payment status" });
     }
-
-    const updated = await db.update(waterRequests)
-      .set({ status })
-      .where(eq(waterRequests.id, req.params.id))
-      .returning();
-
-    if (!updated.length) {
-      return res.status(404).json({ error: "Request not found" });
-    }
-    return res.json(updated[0]);
-  } catch (error) {
-    return res.status(500).json({ error: "Failed to update request" });
   }
-});
-router.post("/requests", async (req, res) => {
+);
+
+// PATCH /requests/:id — update status (Admin only)
+router.patch(
+  "/requests/:id",
+  requireAuth,
+  requireRole(["Admin", "Sub-Admin"]),
+  async (req, res) => {
+    try {
+      const { status } = patchStatusSchema.parse(req.body);
+      const updated = await db
+        .update(waterRequests)
+        .set({ status })
+        .where(eq(waterRequests.id, req.params.id as string))
+        .returning();
+
+      if (!updated.length) return res.status(404).json({ error: "Request not found" });
+
+      await writeAuditLog(
+        req.user!.email,
+        `Updated request ${req.params.id} status to ${status}`,
+        getIp(req),
+        req.user!.role
+      );
+
+      return res.json(updated[0]);
+    } catch (error) {
+      if (error instanceof z.ZodError)
+        return res.status(400).json({ error: "Invalid input", details: error.errors });
+      return res.status(500).json({ error: "Failed to update request" });
+    }
+  }
+);
+
+// POST /requests — create new request (Farmer only)
+router.post("/requests", requireAuth, requireRole(["Farmer"]), async (req, res) => {
   try {
-    const data = req.body;
+    const data = createRequestSchema.parse(req.body);
     const id = `REQ-${Math.floor(Math.random() * 9000) + 1000}`;
-    
-    // Default values if missing
+
+    // Server-side billing calculation — never trust frontend value
+    const ratePerHa = RATES[data.category]?.[data.season];
+    if (!ratePerHa) {
+      return res.status(400).json({ error: "Invalid category or season" });
+    }
+    const finalBill = Math.round(ratePerHa * data.area);
+
     const newRequest: InsertRequest = {
       id,
-      farmerName: data.farmerName || "Anonymous Farmer",
-      aadhaar: data.aadhaar || "N/A",
-      landId: data.landId || "N/A",
-      village: data.village || "N/A",
-      district: data.district || "N/A",
-      cropType: data.cropType || "Sugarcane",
-      durationHours: Number(data.durationHours) || 8,
-      startDate: data.startDate ? new Date(data.startDate) : new Date(),
-      calculatedBilling: Number(data.calculatedBilling) || (Number(data.durationHours) || 8) * 150,
+      userId: req.user!.id, // Bind securely to authenticated user
+      farmerName: data.farmerName,
+      aadhaar: data.aadhaar,
+      landId: data.landId,
+      village: data.village,
+      district: data.district,
+      cropType: `${data.crop} (${data.category})`,
+      durationHours: 8,
+      startDate: new Date(),
+      calculatedBilling: finalBill,    // Legacy compat field
       geoStatus: "Pending",
       status: "Pending",
-      confidenceScore: Math.floor(Math.random() * 30) + 70, // 70-100
-      ndviIndex: Number((Math.random() * 0.5 + 0.3).toFixed(2)), // 0.3-0.8
-      evidenceImage: data.verificationData?.image || null,
+      paymentStatus: "Unpaid",         // Legacy compat field
+      confidenceScore: Math.floor(Math.random() * 30) + 70, // 70-100 Mock AI
+      ndviIndex: Number((Math.random() * 0.5 + 0.3).toFixed(2)), // Mock AI
+      // Supabase Storage fields (preferred going forward)
+      evidenceImagePath: data.verificationData?.imagePath || null,
+      evidenceImageMime: data.verificationData?.imageMime || null,
+      evidenceImageSize: data.verificationData?.imageSize || null,
+      // Legacy Base64 field — no longer accepted here; only path is stored
+      evidenceImage: null,
       latitude: data.verificationData?.latitude || null,
       longitude: data.verificationData?.longitude || null,
       deviceInfo: data.verificationData?.device || null,
@@ -115,10 +260,28 @@ router.post("/requests", async (req, res) => {
     };
 
     const [inserted] = await db.insert(waterRequests).values(newRequest).returning();
-    res.status(201).json(inserted);
+
+    // Create a normalized bill record (future source of truth)
+    await db.insert(bills).values({
+      requestId: inserted.id,
+      userId: req.user!.id,
+      amount: finalBill,
+      status: "Generated",
+    });
+
+    await writeAuditLog(
+      req.user!.email,
+      `Created request ${inserted.id} for area ${data.area} ha, bill ₹${finalBill}`,
+      getIp(req),
+      req.user!.role
+    );
+
+    return res.status(201).json(inserted);
   } catch (error) {
+    if (error instanceof z.ZodError)
+      return res.status(400).json({ error: "Invalid input", details: error.errors });
     console.error("Error creating request:", error);
-    res.status(500).json({ error: "Failed to create request" });
+    return res.status(500).json({ error: "Failed to create request" });
   }
 });
 

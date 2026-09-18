@@ -39,12 +39,16 @@ const queryClient = new QueryClient({
 });
 
 function Router() {
-  const { user, role } = useRole();
+  const { user, role, isLoading } = useRole();
   const [location] = useLocation();
 
   // Simple Auth Guard
   const isAuthPath = location.startsWith('/auth');
   const isPublicPath = location === '/' || isAuthPath;
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   if (!user && !isPublicPath) {
     return <Redirect to="/auth/login" />;

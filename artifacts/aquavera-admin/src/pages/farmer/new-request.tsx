@@ -103,12 +103,10 @@ export default function NewRequest() {
         landId: user.landRecordId,
         village: user.city,
         district: user.taluka,
-        cropType: `${formData.crop} (${formData.category})`,
+        category: formData.category,
+        crop: formData.crop,
+        season: formData.season,
         area: billingInfo.areaInHa,
-        durationHours: 8,
-        startDate: new Date(),
-        calculatedBilling: billingInfo.finalBill,
-        paymentStatus: 'Unpaid',
         verificationData: formData.verificationData
       });
 

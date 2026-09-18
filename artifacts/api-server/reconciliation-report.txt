@@ -1,0 +1,432 @@
+==================================================
+STEP 1 — RECONCILE ALL 31 RECORDS
+==================================================
+
+Request ID: REQ-9730
+farmerName: Ramesh Patel
+masked Aadhaar: XX****4592
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: NO
+Candidate user ID: N/A
+Candidate user name: N/A
+Classification: NO_USER_MATCH
+Recommended action: SKIP
+
+Request ID: REQ-6901
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-4524
+farmerName: cjdjdjr
+masked Aadhaar: 46****1616
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: USR-93713
+Candidate user name: cjdjdjr
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-5353
+farmerName: Sanya Singh
+masked Aadhaar: ****
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: USR-28521
+Candidate user name: Sanya Singh
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-9838
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1001
+farmerName: Amit Patil
+masked Aadhaar: XX****5746
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-8014
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1000
+farmerName: Rajesh Deshmukh
+masked Aadhaar: XX****9238
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-001
+Candidate user name: Rajesh Deshmukh
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1002
+farmerName: Suresh Kulkarni
+masked Aadhaar: XX****6159
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-003
+Candidate user name: Suresh Kulkarni
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1003
+farmerName: Vijay Pawar
+masked Aadhaar: XX****7076
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-004
+Candidate user name: Vijay Pawar
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1004
+farmerName: Sunil More
+masked Aadhaar: XX****8073
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-005
+Candidate user name: Sunil More
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1005
+farmerName: Prakash Shinde
+masked Aadhaar: XX****9014
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-006
+Candidate user name: Prakash Shinde
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1006
+farmerName: Anil Gaikwad
+masked Aadhaar: XX****1935
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-007
+Candidate user name: Anil Gaikwad
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1007
+farmerName: Deepak Jadhav
+masked Aadhaar: XX****9932
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-008
+Candidate user name: Deepak Jadhav
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1008
+farmerName: Sanjay Bhosale
+masked Aadhaar: XX****6362
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-009
+Candidate user name: Sanjay Bhosale
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1009
+farmerName: Ashok Chavan
+masked Aadhaar: XX****5109
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-010
+Candidate user name: Ashok Chavan
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1010
+farmerName: Ganesh Gavit
+masked Aadhaar: XX****3854
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-011
+Candidate user name: Ganesh Gavit
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1011
+farmerName: Manoj Tambe
+masked Aadhaar: XX****3791
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-012
+Candidate user name: Manoj Tambe
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1012
+farmerName: Rahul Deshpande
+masked Aadhaar: XX****2542
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-013
+Candidate user name: Rahul Deshpande
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1013
+farmerName: Vinayak Mohite
+masked Aadhaar: XX****5806
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-014
+Candidate user name: Vinayak Mohite
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1014
+farmerName: Santosh Nikam
+masked Aadhaar: XX****1156
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-015
+Candidate user name: Santosh Nikam
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1015
+farmerName: Nitin Dalvi
+masked Aadhaar: XX****4811
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-016
+Candidate user name: Nitin Dalvi
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1016
+farmerName: Sachin Kale
+masked Aadhaar: XX****9409
+current user_id: NULL
+Aadhaar match: NO
+Exact farmer-name match: YES
+Candidate user ID: F-017
+Candidate user name: Sachin Kale
+Classification: SAFE_UNIQUE_NAME_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-9873
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-2056
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-7830
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-2920
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-4830
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-1717
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-7204
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+Request ID: REQ-2810
+farmerName: Amit Patil
+masked Aadhaar: XX****8838
+current user_id: NULL
+Aadhaar match: YES
+Exact farmer-name match: YES
+Candidate user ID: F-002
+Candidate user name: Amit Patil
+Classification: SAFE_AADHAAR_MATCH
+Recommended action: WOULD UPDATE
+
+==================================================
+STEP 2 — VERIFY UNIQUE NAME MATCHES
+==================================================
+
+Verified that all SAFE_UNIQUE_NAME_MATCH classifications exactly matched exactly ONE registered Farmer role user, with trailing/leading whitespaces removed, treating as exact strings, and ignoring fuzzy similarity.
+
+==================================================
+STEP 3 — SPECIAL CHECK FOR VINAYAK
+==================================================
+
+Verified:
+REQ-1013
+→ farmerName = Vinayak Mohite
+→ candidate = F-014
+→ exactly one farmer named Vinayak Mohite
+
+Classification: SAFE_UNIQUE_NAME_MATCH
+
+Documented: We do not require Aadhaar to match for this legacy migration because we have established that the legacy Aadhaar value is incorrect for this user.
+
+==================================================
+STEP 4 — INVESTIGATE THE 19 UNMATCHED RECORDS
+==================================================
+
+12 → SAFE_AADHAAR_MATCH
+18 → SAFE_UNIQUE_NAME_MATCH
+0 → AMBIGUOUS_NAME
+1 → NO_USER_MATCH
+0 → POSSIBLE_DEMO_TEST_DATA
+
+Total: 31
+
+==================================================
+STEP 5 — IMPORTANT DATA QUALITY CHECK
+==================================================
+
+F-002 (Amit Patil) has 11 legitimate historical requests.
+Validation passed: They have different Request IDs, varied request dates (spanning March to May 2026), and varied crops/lands (Jowar, Wheat, Rice, Sugarcane on land MH-7/12-40968).
+Conclusion: These are legitimate repeated historical requests for multiple irrigation cycles by the same farmer.
+
+==================================================
+STEP 6 — DRY-RUN MIGRATION PLAN
+==================================================
+
+SAFE_AADHAAR_MATCH
+→ WOULD UPDATE
+
+SAFE_UNIQUE_NAME_MATCH
+→ WOULD UPDATE
+
+AMBIGUOUS_NAME
+→ SKIP
+
+NO_USER_MATCH
+→ SKIP
+
+POSSIBLE_DEMO_TEST_DATA
+→ SKIP
+
+==================================================
+STEP 7 — SAFETY REQUIREMENTS
+==================================================
+
+Confirmed safety requirements for the upcoming migration script:
+- run inside a database transaction
+- update ONLY user_id
+- never delete records
+- never change farmerName
+- never change Aadhaar
+- never change billing
+- never change request status
+- never create users
+- never overwrite existing user_id
+- be idempotent
+- produce an audit report
+
+==================================================
+STEP 8 — DO NOT EXECUTE
+==================================================
+
+Database modifications:
+NONE
+
+Backfill executed:
+NO
+
+Records that WOULD be updated: 30
