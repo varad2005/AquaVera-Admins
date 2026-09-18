@@ -7,7 +7,8 @@
     "build": "pnpm run typecheck && pnpm run build:unified",
     "build:unified": "pnpm -F @workspace/aquavera-admin build && pnpm -F @workspace/api-server build",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -F @workspace/aquavera-admin -F @workspace/api-server --if-present run typecheck"
+    "typecheck": "pnpm run typecheck:libs && pnpm -F @workspace/aquavera-admin -F @workspace/api-server --if-present run typecheck",
+    "start": "node artifacts/api-server/dist/index.cjs"
   },
   "private": true,
   "devDependencies": {
