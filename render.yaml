@@ -1,0 +1,30 @@
+services:
+  # ── AquaVera Full-Stack Web Service (Frontend + API Backend) ─────────────────
+  - type: web
+    name: aquavera
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install -g pnpm && pnpm install --frozen-lockfile && pnpm run build
+    startCommand: node artifacts/api-server/dist/index.cjs
+    healthCheckPath: /api/healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: VITE_BHUVAN_API_KEY
+        sync: false
+      - key: VITE_BHUVAN_REVERSE_API_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: evidence-images
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: CLIP_SERVICE_URL
+        sync: false

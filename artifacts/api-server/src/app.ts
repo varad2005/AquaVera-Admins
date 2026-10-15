@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 import express, { type Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -48,11 +49,14 @@ app.use("/api", router);
 
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
-  const publicPath = path.resolve(process.cwd(), "artifacts/api-server/dist/public");
+  const possiblePaths = [
+    path.resolve(process.cwd(), "artifacts/api-server/dist/public"),
+    path.resolve(__dirname, "public"),
+    path.resolve(process.cwd(), "dist/public"),
+  ];
+  const publicPath = possiblePaths.find((p) => fs.existsSync(p)) || possiblePaths[0];
   
-  if (express.static(publicPath)) {
-    app.use(express.static(publicPath));
-  }
+  app.use(express.static(publicPath));
 
   // Catch-all for SPA routing
   app.get("*path", (req, res, next) => {
