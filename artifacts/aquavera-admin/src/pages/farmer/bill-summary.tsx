@@ -56,10 +56,16 @@ export default function BillSummary() {
             <p className="text-slate-500 font-medium tracking-tight">{t("farmer.irrigation_oversight")}</p>
           </div>
           <button 
+            disabled={paymentPending === 0}
             onClick={() => setLocation(`/payment?amount=${paymentPending}&requestId=all`)}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl text-sm font-bold shadow-xl shadow-slate-900/20 hover:bg-emerald-600 transition-all duration-300"
+            className={cn(
+              "flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-300",
+              paymentPending > 0 
+                ? "bg-slate-900 text-white shadow-xl shadow-slate-900/20 hover:bg-emerald-600 cursor-pointer active:scale-95" 
+                : "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
+            )}
           >
-            {t("bill.pay_dues")} <ArrowUpRight className="w-4 h-4" />
+            {paymentPending > 0 ? t("bill.pay_dues") : t("farmer.payment_done")} <ArrowUpRight className="w-4 h-4" />
           </button>
         </div>
 

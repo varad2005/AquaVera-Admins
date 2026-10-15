@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
-import { db, waterRequests, bills, auditLogs, type InsertRequest } from "@workspace/db";
-import { eq, sql, count } from "@workspace/db";
+import { db, waterRequests, bills, payments, auditLogs, type InsertRequest } from "@workspace/db";
+import { eq, and, sql, count } from "@workspace/db";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { z } from "zod";
 
@@ -71,7 +71,7 @@ const patchStatusSchema = z.object({
 });
 
 const bulkPaySchema = z.object({
-  farmerName: z.string().min(1),
+  farmerName: z.string().optional(),
 });
 
 // ── Routes ────────────────────────────────────────────────────────────────────
@@ -125,23 +125,79 @@ router.get("/requests/:id", requireAuth, async (req, res) => {
   }
 });
 
-// POST /requests/pay-all — bulk pay for a farmer (Admin only, deprecated legacy path)
+// POST /requests/pay-all — bulk pay for a farmer (Farmer or Admin/Sub-Admin)
 router.post(
   "/requests/pay-all",
   requireAuth,
-  requireRole(["Admin", "Sub-Admin"]),
+  requireRole(["Farmer", "Admin", "Sub-Admin"]),
   async (req, res) => {
     try {
-      const { farmerName } = bulkPaySchema.parse(req.body);
-      const updated = await db
-        .update(waterRequests)
-        .set({ paymentStatus: "Paid" })
-        .where(eq(waterRequests.farmerName, farmerName))
-        .returning();
+      let updated: (typeof waterRequests.$inferSelect)[] = [];
+      const userRole = req.user!.role;
+
+      if (userRole === "Farmer") {
+        // Farmers only pay their own approved unpaid requests
+        updated = await db
+          .update(waterRequests)
+          .set({ paymentStatus: "Paid" })
+          .where(
+            and(
+              eq(waterRequests.userId, req.user!.id),
+              eq(waterRequests.status, "Approved"),
+              eq(waterRequests.paymentStatus, "Unpaid")
+            )
+          )
+          .returning();
+      } else {
+        const { farmerName } = bulkPaySchema.parse(req.body);
+        if (!farmerName) {
+          return res.status(400).json({ error: "farmerName is required for admin bulk payment" });
+        }
+        updated = await db
+          .update(waterRequests)
+          .set({ paymentStatus: "Paid" })
+          .where(
+            and(
+              eq(waterRequests.farmerName, farmerName),
+              eq(waterRequests.status, "Approved")
+            )
+          )
+          .returning();
+      }
+
+      // Sync corresponding bills and payments records
+      for (const reqItem of updated) {
+        try {
+          const matchingBills = await db
+            .select()
+            .from(bills)
+            .where(eq(bills.requestId, reqItem.id));
+
+          for (const bill of matchingBills) {
+            if (bill.status !== "Paid") {
+              await db
+                .update(bills)
+                .set({ status: "Paid", paidAt: new Date() })
+                .where(eq(bills.id, bill.id));
+
+              await db.insert(payments).values({
+                billId: bill.id,
+                userId: bill.userId,
+                amount: bill.amount,
+                status: "Completed",
+                provider: "Portal",
+                providerTransactionId: `TXN-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+              });
+            }
+          }
+        } catch (syncErr) {
+          console.error("Failed to sync bill for request", reqItem.id, syncErr);
+        }
+      }
 
       await writeAuditLog(
         req.user!.email,
-        `Bulk pay-all for farmer: ${farmerName} (${updated.length} records)`,
+        `Bulk pay-all for ${userRole === "Farmer" ? "self (" + req.user!.id + ")" : req.body.farmerName} (${updated.length} records)`,
         getIp(req),
         req.user!.role
       );
@@ -155,30 +211,68 @@ router.post(
   }
 );
 
-// PATCH /requests/:id/pay — mark single request paid (Admin only, legacy compat)
+// PATCH /requests/:id/pay — mark single request paid
 router.patch(
   "/requests/:id/pay",
   requireAuth,
-  requireRole(["Admin", "Sub-Admin"]),
+  requireRole(["Farmer", "Admin", "Sub-Admin"]),
   async (req, res) => {
     const { id } = req.params;
     try {
-      const updated = await db
+      const [existing] = await db
+        .select()
+        .from(waterRequests)
+        .where(eq(waterRequests.id, id as string));
+
+      if (!existing) return res.status(404).json({ error: "Request not found" });
+
+      // IDOR check: Farmers can only pay for their own requests
+      if (req.user!.role === "Farmer" && existing.userId !== req.user!.id) {
+        return res.status(403).json({ error: "Forbidden: cannot pay for another farmer's request" });
+      }
+
+      const [updated] = await db
         .update(waterRequests)
         .set({ paymentStatus: "Paid" })
         .where(eq(waterRequests.id, id as string))
         .returning();
 
-      if (!updated.length) return res.status(404).json({ error: "Request not found" });
+      // Sync corresponding bill and payment record
+      try {
+        const matchingBills = await db
+          .select()
+          .from(bills)
+          .where(eq(bills.requestId, updated.id));
+
+        for (const bill of matchingBills) {
+          if (bill.status !== "Paid") {
+            await db
+              .update(bills)
+              .set({ status: "Paid", paidAt: new Date() })
+              .where(eq(bills.id, bill.id));
+
+            await db.insert(payments).values({
+              billId: bill.id,
+              userId: bill.userId,
+              amount: bill.amount,
+              status: "Completed",
+              provider: "Portal",
+              providerTransactionId: `TXN-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+            });
+          }
+        }
+      } catch (syncErr) {
+        console.error("Failed to sync bill for request", updated.id, syncErr);
+      }
 
       await writeAuditLog(
         req.user!.email,
-        `Marked request ${id} as paid (legacy path)`,
+        `Marked request ${id} as paid`,
         getIp(req),
         req.user!.role
       );
 
-      return res.json(updated[0]);
+      return res.json(updated);
     } catch (error) {
       return res.status(500).json({ error: "Failed to update payment status" });
     }

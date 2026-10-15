@@ -58,6 +58,16 @@ export default function FarmerDashboard() {
   const recentRequests = farmerRequests.slice(0, 5);
 
   // Dynamic calculations from real data
+  const paymentDone = farmerRequests.reduce((acc: number, req: any) => {
+    const status = req.paymentStatus || req.payment_status;
+    return acc + (req.status === 'Approved' && status === 'Paid' ? Number(req.calculatedBilling) : 0);
+  }, 0);
+
+  const paymentPending = farmerRequests.reduce((acc: number, req: any) => {
+    const status = req.paymentStatus || req.payment_status || 'Unpaid';
+    return acc + (req.status === 'Approved' && status === 'Unpaid' ? Number(req.calculatedBilling) : 0);
+  }, 0);
+
   const totalBill = farmerRequests.reduce((acc: number, req: WaterRequest) => acc + (req.status === 'Approved' ? req.calculatedBilling : 0), 0);
   const landInfo = `${user.plotNumber || "Plot #42"}, ${user.city || "Nashik"}`;
   const landArea = user.surveyNumber ? `5.5 ${t("unit.acre")}s` : t("dashboard.not_recorded"); 
@@ -78,6 +88,29 @@ export default function FarmerDashboard() {
             {format(new Date(), "EEEE, MMM dd")}
           </div>
         </div>
+
+        {/* Actionable Banner: Pending Dues Alert */}
+        {paymentPending > 0 && (
+          <div className="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-500 rounded-[2.2rem] p-6 text-white shadow-xl shadow-rose-500/10 flex flex-col sm:flex-row items-center justify-between gap-6 border border-white/20">
+            <div className="flex items-center gap-4 text-center sm:text-left">
+              <div className="p-3.5 bg-white/20 rounded-2xl backdrop-blur-md shrink-0 shadow-inner">
+                <CreditCard className="w-7 h-7 text-white" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2 justify-center sm:justify-start">
+                  <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full border border-white/30">Action Required</span>
+                  <h3 className="text-lg font-black tracking-tight">{t("farmer.payment_pending")}: {formatCurrency(paymentPending)}</h3>
+                </div>
+                <p className="text-xs text-white/90 font-medium">{t("farmer.pending_desc")}</p>
+              </div>
+            </div>
+            <Link href={`/payment?amount=${paymentPending}&requestId=all`}>
+              <Button className="h-12 px-6 rounded-2xl bg-white text-rose-700 hover:bg-slate-100 font-black text-xs uppercase tracking-widest shadow-xl transition-all hover:scale-105 active:scale-95 shrink-0 gap-2">
+                {t("bill.pay_dues")} <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+        )}
 
         {/* PROMINENT CTA: Request Water */}
         <Link href="/requests/new">
@@ -130,12 +163,17 @@ export default function FarmerDashboard() {
                 icon={Leaf} 
                 className="rounded-3xl border-none shadow-sm bg-white"
               />
-              <StatCard 
-                title={t("dashboard.total_billing")} 
-                value={formatCurrency(totalBill)} 
-                icon={CreditCard} 
-                className="rounded-3xl border-none shadow-sm bg-white"
-              />
+              <Link href="/bills">
+                <StatCard 
+                  title={paymentPending > 0 ? t("farmer.payment_pending") : t("dashboard.total_billing")} 
+                  value={formatCurrency(paymentPending > 0 ? paymentPending : totalBill)} 
+                  icon={CreditCard} 
+                  className={cn(
+                    "rounded-3xl border-none shadow-sm cursor-pointer transition-all hover:scale-[1.02]",
+                    paymentPending > 0 ? "bg-rose-50 text-rose-700 border border-rose-100" : "bg-white"
+                  )}
+                />
+              </Link>
               <StatCard 
                 title={t("land.title")} 
                 value={landArea} 
@@ -169,42 +207,64 @@ export default function FarmerDashboard() {
                       {t("dashboard.no_requests_desc")}
                     </p>
                   </div>
-                  <Button className="rounded-2xl bg-slate-900 hover:bg-emerald-600 px-8 font-bold gap-2">
-                    {t("dashboard.request_water")} <PlusCircle className="w-4 h-4" />
-                  </Button>
+                  <Link href="/requests/new">
+                    <Button className="rounded-2xl bg-slate-900 hover:bg-emerald-600 px-8 font-bold gap-2">
+                      {t("dashboard.request_water")} <PlusCircle className="w-4 h-4" />
+                    </Button>
+                  </Link>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {recentRequests.map((req: WaterRequest) => (
-                    <div 
-                      key={req.id} 
-                      className="bg-white border-border border rounded-3xl p-5 flex items-center justify-between hover:shadow-md transition-all duration-300"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                          <Droplets className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-bold text-slate-800 tracking-tight">{req.cropType}</h4>
-                            <span className="text-[9px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 font-black uppercase tracking-wider">
-                              {req.id}
-                            </span>
+                  {recentRequests.map((req: WaterRequest) => {
+                    const isApproved = req.status === 'Approved';
+                    const isPaid = req.paymentStatus === 'Paid';
+                    const isUnpaid = isApproved && !isPaid;
+
+                    return (
+                      <div 
+                        key={req.id} 
+                        className="bg-white border-border border rounded-3xl p-5 flex items-center justify-between hover:shadow-md transition-all duration-300"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <Droplets className="w-6 h-6" />
                           </div>
-                          <p className="text-[11px] text-slate-400 font-medium">
-                            {format(new Date(req.timestamp), 'MMM dd')} • {req.durationHours} {t("unit.hours")} • {req.village}
-                          </p>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-bold text-slate-800 tracking-tight">{req.cropType}</h4>
+                              <span className="text-[9px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 font-black uppercase tracking-wider">
+                                {req.id}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-400 font-medium">
+                              {format(new Date(req.timestamp), 'MMM dd')} • {req.durationHours} {t("unit.hours")} • {req.village}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col items-end gap-1.5">
+                          <span className="text-sm font-black text-slate-800">
+                            {formatCurrency(req.calculatedBilling)}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <StatusBadge status={req.status} className="text-[9px] px-2 py-0.5 rounded-full" />
+                            {isUnpaid && (
+                              <Link href={`/payment?amount=${req.calculatedBilling}&requestId=${req.id}`}>
+                                <button className="px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-[9px] font-black uppercase tracking-wider hover:bg-emerald-700 transition-all shadow-md shadow-emerald-600/20 active:scale-95">
+                                  {t("bill.pay_now")}
+                                </button>
+                              </Link>
+                            )}
+                            {isPaid && (
+                              <span className="text-[9px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                                {t("bill.paid")}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className="flex flex-col items-end gap-1.5">
-                        <span className="text-sm font-black text-slate-800">
-                          {formatCurrency(req.calculatedBilling)}
-                        </span>
-                        <StatusBadge status={req.status} className="text-[9px] px-2 py-0.5 rounded-full" />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </section>

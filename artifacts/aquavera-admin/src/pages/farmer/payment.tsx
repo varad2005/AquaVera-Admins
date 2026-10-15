@@ -13,12 +13,16 @@ import {
 import { useLocation, Link } from "wouter";
 import { useRole } from "@/context/role-context";
 import { useLanguage } from "@/context/language-context";
-import { API_BASE_URL } from "@/lib/api-config";
+import { apiFetch } from "@/lib/api-fetch";
+import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 export default function PaymentPage() {
   const { user } = useRole();
   const [location, setLocation] = useLocation();
   const { t } = useLanguage();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   if (!user) return null;
   const [step, setStep] = useState('selection'); // selection, processing, success
   const [method, setMethod] = useState('card');
@@ -61,32 +65,44 @@ export default function PaymentPage() {
     }
 
     try {
-      const params = new URLSearchParams(window.location.search);
-      const requestId = params.get('requestId');
+      const searchParams = new URLSearchParams(window.location.search);
+      const requestId = searchParams.get('requestId');
       
       if (requestId === 'all') {
-        const res = await fetch(`${API_BASE_URL}/requests/pay-all`, {
+        const res = await apiFetch(`/api/requests/pay-all`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
           body: JSON.stringify({ farmerName: user.name })
         });
-        if (!res.ok) throw new Error('Failed to update bulk payment');
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Failed to update bulk payment');
+        }
       } else if (requestId) {
-        const res = await fetch(`${API_BASE_URL}/requests/${requestId}/pay`, {
+        const res = await apiFetch(`/api/requests/${requestId}/pay`, {
           method: 'PATCH',
-          credentials: 'include',
         });
-        if (!res.ok) throw new Error('Failed to update payment');
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Failed to update payment');
+        }
       }
+
+      // Immediately invalidate cache so all dashboard & billing numbers update
+      queryClient.invalidateQueries({ queryKey: ['requests'] });
+      queryClient.invalidateQueries({ queryKey: ['logs'] });
 
       setTimeout(() => {
         setLoading(false);
         setStep('success');
-      }, 1500);
-    } catch (error) {
+      }, 1000);
+    } catch (error: any) {
       setLoading(false);
-      alert("Payment failed to sync with server.");
+      toast({
+        title: "Payment Error",
+        description: error.message || "Payment failed to sync with server.",
+        variant: "destructive"
+      });
     }
   };
 
