@@ -55,3 +55,12 @@ Thumbs.db
 
 # Redundant lock files
 package-lock.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.pt
+*.pth

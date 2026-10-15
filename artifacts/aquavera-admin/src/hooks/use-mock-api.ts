@@ -198,3 +198,26 @@ export function useUploadEvidence() {
     },
   });
 }
+
+// ── CLIP Verification ─────────────────────────────────────────────────────────
+
+export function useVerifyCropWithCLIP() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (requestId: string) => {
+      const res = await apiFetch(`/api/requests/${requestId}/verify-crop`, {
+        method: 'POST',
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'CLIP verification failed');
+      }
+      return res.json();
+    },
+    onSuccess: (_, requestId) => {
+      queryClient.invalidateQueries({ queryKey: ['requests'] });
+      queryClient.invalidateQueries({ queryKey: ['request', requestId] });
+    },
+  });
+}
+

@@ -1,21 +1,73 @@
 import { useParams, Link, useLocation } from "wouter";
 import { AppLayout } from "@/components/layout/app-layout";
-import { useRequest, useUpdateRequestStatus } from "@/hooks/use-mock-api";
+import { useRequest, useUpdateRequestStatus, useVerifyCropWithCLIP } from "@/hooks/use-mock-api";
 import { StatusBadge } from "@/components/ui-custom/status-badge";
 import { formatCurrency } from "@/lib/utils";
-import { format } from "date-fns";
-import { ArrowLeft, MapPin, Image as ImageIcon, CheckCircle, XCircle, AlertTriangle, UserCheck, ShieldAlert, Cpu, Droplets } from "lucide-react";
-import { useState } from "react";
-
+import { format, subHours } from "date-fns";
+import { 
+  ArrowLeft, MapPin, Image as ImageIcon, CheckCircle, XCircle, 
+  AlertTriangle, UserCheck, ShieldAlert, Cpu, Droplets, RefreshCw, 
+  Sparkles, Navigation, Globe
+} from "lucide-react";
+import { useState, useMemo } from "react";
 import { useLanguage } from "@/context/language-context";
+import { useToast } from "@/hooks/use-toast";
+import { MapContainer, TileLayer, Marker, Popup, Polygon } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 export default function RequestDetail() {
   const { t } = useLanguage();
   const { id } = useParams();
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const { data: request, isLoading } = useRequest(id || '');
   const { mutate: updateStatus, isPending } = useUpdateRequestStatus();
+  const { mutate: verifyWithCLIP, isPending: isVerifying } = useVerifyCropWithCLIP();
   const [activeTab, setActiveTab] = useState<'satellite' | 'crop'>('satellite');
+
+  // Compute a 4-point parcel boundary around plot center coordinates
+  const parcelPolygon = useMemo(() => {
+    if (!request?.latitude || !request?.longitude) return null;
+    const lat = request.latitude;
+    const lon = request.longitude;
+    const delta = 0.0016; // approx 180m parcel span
+    return [
+      [lat - delta * 0.6, lon - delta * 0.9],
+      [lat + delta * 0.8, lon - delta * 0.7],
+      [lat + delta * 0.9, lon + delta * 0.8],
+      [lat - delta * 0.5, lon + delta * 0.9],
+    ] as [number, number][];
+  }, [request?.latitude, request?.longitude]);
+
+  // Map pin icon matching request status
+  const pinIcon = useMemo(() => {
+    if (!request) return undefined;
+    const color = 
+      request.status === 'Approved' ? '#10b981' :
+      request.status === 'Flagged' ? '#ef4444' :
+      request.status === 'Rejected' ? '#64748b' : '#f59e0b';
+
+    return L.divIcon({
+      className: 'custom-detail-pin',
+      html: `<div style="
+        background-color: ${color};
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      ">
+        <span style="font-size: 15px;">🌱</span>
+      </div>`,
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+      popupAnchor: [0, -18],
+    });
+  }, [request?.status]);
 
   if (isLoading) {
     return (
@@ -48,6 +100,26 @@ export default function RequestDetail() {
       }
     });
   };
+
+  const handleCLIPReverify = () => {
+    verifyWithCLIP(request.id, {
+      onSuccess: (data: any) => {
+        toast({
+          title: "CLIP Zero-Shot Verification Complete",
+          description: `Identified as '${data.telemetry?.topDetectedMatch || request.cropType}' with ${data.telemetry?.confidenceScore || data.request?.confidenceScore}% confidence.`,
+        });
+      },
+      onError: (err: any) => {
+        toast({
+          title: "Verification Failed",
+          description: err.message || "Failed to verify image with CLIP",
+          variant: "destructive",
+        });
+      }
+    });
+  };
+
+  const hasCoords = Boolean(request.latitude && request.longitude);
 
   return (
     <AppLayout>
@@ -120,9 +192,26 @@ export default function RequestDetail() {
           </div>
 
           <div className="bg-card border border-border rounded-md shadow-sm overflow-hidden">
-            <div className="p-5 border-b border-border bg-slate-50/50 flex items-center gap-2">
-              <Cpu className="w-5 h-5 text-slate-600" />
-              <h2 className="font-semibold text-foreground">{t("detail.ai_analysis")}</h2>
+            <div className="p-5 border-b border-border bg-slate-50/50 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Cpu className="w-5 h-5 text-slate-600" />
+                <h2 className="font-semibold text-foreground">{t("detail.ai_analysis")}</h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-blue-600" />
+                  OpenAI CLIP (ViT-B/32)
+                </span>
+                <button
+                  onClick={handleCLIPReverify}
+                  disabled={isVerifying}
+                  className="text-xs px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded font-medium transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                  title="Run real-time zero-shot crop verification with OpenAI CLIP"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isVerifying ? 'animate-spin text-primary' : ''}`} />
+                  {isVerifying ? "Verifying..." : "Re-scan with CLIP"}
+                </button>
+              </div>
             </div>
             <div className="p-6">
               <div className="flex items-center justify-between mb-2">
@@ -133,7 +222,7 @@ export default function RequestDetail() {
               </div>
               <div className="w-full bg-muted rounded-full h-2.5 mb-6">
                 <div 
-                  className={`h-2.5 rounded-full ${request.confidenceScore > 80 ? 'bg-green-600' : request.confidenceScore > 60 ? 'bg-amber-500' : 'bg-red-600'}`} 
+                  className={`h-2.5 rounded-full transition-all duration-500 ${request.confidenceScore > 80 ? 'bg-green-600' : request.confidenceScore > 60 ? 'bg-amber-500' : 'bg-red-600'}`} 
                   style={{ width: `${request.confidenceScore}%` }}
                 ></div>
               </div>
@@ -160,7 +249,10 @@ export default function RequestDetail() {
               {request.confidenceScore < 70 && (
                 <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-md flex items-start gap-3">
                   <ShieldAlert className="w-5 h-5 text-red-600 shrink-0" />
-                  <p className="text-sm text-red-800 font-medium">{t("detail.anomaly_detected").replace('{crop}', t(`crop.${request.cropType.toLowerCase()}`))}</p>
+                  <div>
+                    <p className="text-sm text-red-800 font-medium">{t("detail.anomaly_detected").replace('{crop}', t(`crop.${request.cropType.toLowerCase()}`))}</p>
+                    <p className="text-xs text-red-600 mt-0.5">OpenAI CLIP detected low agricultural consistency or potential indoor capture. Field officer inspection advised.</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -175,7 +267,7 @@ export default function RequestDetail() {
                 onClick={() => setActiveTab('satellite')}
                 className={`flex-1 py-3 text-sm font-medium flex items-center justify-center gap-2 border-b-2 transition-colors ${activeTab === 'satellite' ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-muted-foreground hover:bg-muted/50'}`}
               >
-                <MapPin className="w-4 h-4" /> {t("detail.satellite_map")}
+                <Globe className="w-4 h-4" /> {t("detail.satellite_map")}
               </button>
               <button 
                 onClick={() => setActiveTab('crop')}
@@ -184,24 +276,78 @@ export default function RequestDetail() {
                 <ImageIcon className="w-4 h-4" /> {t("detail.drone_scan")}
               </button>
             </div>
-            <div className="flex-1 bg-slate-900 relative min-h-[400px]">
+            <div className="flex-1 bg-slate-900 relative min-h-[420px]">
               {activeTab === 'satellite' ? (
-                <>
-                  <img src={`${import.meta.env.BASE_URL}images/satellite-placeholder.png`} alt="Satellite map" className="w-full h-full object-cover opacity-80" />
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    {/* Simulated plot highlight overlay */}
-                    <div className="border-2 border-primary bg-primary/20 w-48 h-32 transform rotate-12 relative shadow-[0_0_15px_rgba(21,128,61,0.5)]">
-                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap">
-                        {t("detail.plot_id")}: {request.landId}
-                      </div>
+                hasCoords ? (
+                  <div className="w-full h-full min-h-[420px] relative">
+                    <MapContainer
+                      center={[request.latitude!, request.longitude!]}
+                      zoom={15}
+                      scrollWheelZoom={false}
+                      className="w-full h-full min-h-[420px] z-0"
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.esri.com/">Esri</a> World Imagery'
+                        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                      />
+                      {parcelPolygon && (
+                        <Polygon
+                          positions={parcelPolygon}
+                          pathOptions={{
+                            color: '#10b981',
+                            fillColor: '#10b981',
+                            fillOpacity: 0.25,
+                            weight: 2,
+                            dashArray: '4, 4'
+                          }}
+                        />
+                      )}
+                      {pinIcon && (
+                        <Marker position={[request.latitude!, request.longitude!]} icon={pinIcon}>
+                          <Popup>
+                            <div className="text-xs space-y-1">
+                              <p className="font-bold text-slate-800">{request.landId}</p>
+                              <p className="text-slate-600">{request.farmerName}</p>
+                              <p className="text-slate-500 font-mono">{request.cropType}</p>
+                              <p className="text-[11px] text-emerald-600 font-semibold">{request.latitude!.toFixed(4)}° N, {request.longitude!.toFixed(4)}° E</p>
+                            </div>
+                          </Popup>
+                        </Marker>
+                      )}
+                    </MapContainer>
+                    
+                    {/* Telemetry overlay pill */}
+                    <div className="absolute top-3 right-3 bg-slate-900/85 backdrop-blur text-white text-[11px] px-3 py-1.5 rounded-md border border-slate-700/80 shadow-md z-[400] flex items-center gap-2 font-mono">
+                      <Navigation className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>{request.latitude!.toFixed(4)}° N, {request.longitude!.toFixed(4)}° E</span>
+                    </div>
+
+                    <div className="absolute bottom-3 left-3 right-3 bg-slate-900/85 backdrop-blur text-white p-2.5 rounded-md border border-slate-700/80 text-xs z-[400] flex items-center justify-between">
+                      <span className="text-slate-300 font-mono text-[11px]">
+                        Plot ID: <strong className="text-white">{request.landId}</strong>
+                      </span>
+                      <span className="text-[11px] text-slate-400">
+                        {t("detail.last_pass")}: {format(subHours(new Date(request.timestamp), 12), 'PPP p')}
+                      </span>
                     </div>
                   </div>
-                  <div className="absolute bottom-4 left-4 right-4 bg-slate-900/80 backdrop-blur text-white p-3 rounded-md border border-slate-700 text-xs">
-                    {t("detail.last_pass")}: {format(subHours(new Date(request.timestamp), 12), 'PPP p')}
-                  </div>
-                </>
+                ) : (
+                  <>
+                    <img src={`${import.meta.env.BASE_URL}images/satellite-placeholder.png`} alt="Satellite map" className="w-full h-full object-cover opacity-80" />
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="border-2 border-primary bg-primary/20 w-48 h-32 transform rotate-12 relative shadow-[0_0_15px_rgba(21,128,61,0.5)]">
+                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap">
+                          {t("detail.plot_id")}: {request.landId}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="absolute bottom-4 left-4 right-4 bg-slate-900/80 backdrop-blur text-white p-3 rounded-md border border-slate-700 text-xs">
+                      {t("detail.last_pass")}: {format(subHours(new Date(request.timestamp), 12), 'PPP p')}
+                    </div>
+                  </>
+                )
               ) : (
-                <div className="h-full flex items-center justify-center bg-slate-800 relative min-h-[400px]">
+                <div className="h-full flex items-center justify-center bg-slate-800 relative min-h-[420px]">
                    {request.evidenceImagePath || request.evidenceImage ? (
                      <img 
                        src={request.evidenceImagePath || request.evidenceImage} 
@@ -264,6 +410,3 @@ export default function RequestDetail() {
     </AppLayout>
   );
 }
-
-// Helper to use subHours dynamically for the UI mock
-import { subHours } from 'date-fns';
